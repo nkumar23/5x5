@@ -136,11 +136,14 @@ export default function AnimatedGrid() {
   const [rippleDot, setRippleDot] = useState<string | null>(null);
   const [selectedDot, setSelectedDot] = useState<string | null>(null);
   const [selectedContent, setSelectedContent] = useState<ContentKey | null>(null);
+  const [lineStart, setLineStart] = useState<string | null>(null);
+  const [lineEnd, setLineEnd] = useState<string | null>(null);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
   const rippleInterval = useRef<NodeJS.Timeout | null>(null);
+  const lineInterval = useRef<NodeJS.Timeout | null>(null);
   const isAnimating = useRef(false);
 
-  // Function to get the next dot position
+  // Function to get the next dot position for ripple
   const getNextDotPosition = (current: string | null) => {
     if (!current) return '0-0';
     const [row, col] = current.split('-').map(Number);
@@ -150,7 +153,83 @@ export default function AnimatedGrid() {
     return `${row}-${col + 1}`;
   };
 
-  // Function to run one complete ripple animation
+  // Function to get valid neighboring positions within 1 unit (no diagonals)
+  const getValidNeighbors = (position: string): string[] => {
+    const [row, col] = position.split('-').map(Number);
+    const neighbors: string[] = [];
+    
+    // Only horizontal and vertical neighbors
+    const directions = [
+      [-1, 0], // up
+      [1, 0],  // down
+      [0, -1], // left
+      [0, 1]   // right
+    ];
+    
+    for (const [dy, dx] of directions) {
+      const newRow = row + dy;
+      const newCol = col + dx;
+      if (newRow >= 0 && newRow < 5 && newCol >= 0 && newCol < 5) {
+        neighbors.push(`${newRow}-${newCol}`);
+      }
+    }
+    return neighbors;
+  };
+
+  // Function to run the line-drawing animation
+  const runLineAnimation = () => {
+    if (isAnimating.current || selectedDot) return;
+    isAnimating.current = true;
+
+    // Pick random initial points
+    const startRow = Math.floor(Math.random() * 5);
+    const startCol = Math.floor(Math.random() * 5);
+    const startPoint = `${startRow}-${startCol}`;
+    
+    const neighbors = getValidNeighbors(startPoint);
+    const endPoint = neighbors[Math.floor(Math.random() * neighbors.length)];
+    
+    setLineStart(startPoint);
+    setLineEnd(endPoint);
+
+    let currentPoint = endPoint;
+    let previousPoints = new Set([startPoint]); // Track visited points
+    let steps = 0;
+    const maxSteps = 20; // Increased max steps since we're only moving orthogonally
+
+    lineInterval.current = setInterval(() => {
+      const neighbors = getValidNeighbors(currentPoint);
+      // Filter out already visited points and ensure we stay within bounds
+      const validNeighbors = neighbors.filter(n => {
+        const [row, col] = n.split('-').map(Number);
+        return row >= 0 && row < 5 && col >= 0 && col < 5 && !previousPoints.has(n);
+      });
+
+      if (validNeighbors.length === 0 || steps >= maxSteps) {
+        // Fade out the last line
+        setLineStart(null);
+        setLineEnd(null);
+        if (lineInterval.current) {
+          clearInterval(lineInterval.current);
+          lineInterval.current = null;
+        }
+        isAnimating.current = false;
+        resetInactivityTimer();
+        return;
+      }
+
+      // Pick a random neighbor
+      const nextPoint = validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
+      previousPoints.add(nextPoint);
+      
+      setLineStart(currentPoint);
+      setLineEnd(nextPoint);
+      currentPoint = nextPoint;
+      steps++;
+    }, 400); // Slower interval for smoother movement
+  };
+
+  // Function to run ripple animation
   const runRippleAnimation = () => {
     if (isAnimating.current || selectedDot) return;
     isAnimating.current = true;
@@ -166,6 +245,7 @@ export default function AnimatedGrid() {
           }
           setRippleDot(null);
           isAnimating.current = false;
+          resetInactivityTimer();
         }
         return next;
       });
@@ -180,7 +260,8 @@ export default function AnimatedGrid() {
     
     if (!isAnimating.current && !selectedDot) {
       inactivityTimer.current = setTimeout(() => {
-        runRippleAnimation();
+        // Randomly choose between animations
+        Math.random() < 0.5 ? runRippleAnimation() : runLineAnimation();
       }, 5000);
     }
   };
@@ -190,6 +271,7 @@ export default function AnimatedGrid() {
     return () => {
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
       if (rippleInterval.current) clearInterval(rippleInterval.current);
+      if (lineInterval.current) clearInterval(lineInterval.current);
     };
   }, []);
 
@@ -217,23 +299,65 @@ export default function AnimatedGrid() {
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-black">
       <div className="w-[min(90vw,90vh)] aspect-square relative">
+        {/* Close button */}
+        {selectedDot && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="absolute top-4 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
+            onClick={() => {
+              setSelectedDot(null);
+              setSelectedContent(null);
+              resetInactivityTimer();
+            }}
+          >
+            ×
+          </motion.button>
+        )}
+
+        {/* Line overlay */}
+        {lineStart && lineEnd && (
+          <svg 
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{
+              zIndex: 20,
+              padding: 'clamp(0.5rem, 3vmin, 2rem)'
+            }}
+            viewBox="0 0 5 5"
+            preserveAspectRatio="none"
+          >
+            <motion.line
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ 
+                pathLength: { duration: 0.4, ease: "easeInOut" },
+                opacity: { duration: 0.2 }
+              }}
+              x1={parseInt(lineStart.split('-')[1]) + 0.5}
+              y1={parseInt(lineStart.split('-')[0]) + 0.5}
+              x2={parseInt(lineEnd.split('-')[1]) + 0.5}
+              y2={parseInt(lineEnd.split('-')[0]) + 0.5}
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray="0.3 0.5"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+        )}
+        
         <AnimatePresence>
           {selectedContent && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.2 }}
               className="absolute inset-0 flex flex-col items-start justify-start p-8 text-white"
               style={{ marginTop: '100px' }}
             >
-              <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.9 }}
-                className="text-2xl font-medium mb-4"
-              >
-                {selectedContent}
-              </motion.div>
               <p className="text-xl mb-6 max-w-[600px]">
                 {placeholderContent[selectedContent]?.text}
               </p>
@@ -248,13 +372,26 @@ export default function AnimatedGrid() {
         </AnimatePresence>
         
         <div 
-          className="grid h-full"
+          className="grid h-full relative"
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
             gap: 'clamp(0.5rem, 3vmin, 2rem)',
             padding: 'clamp(0.5rem, 3vmin, 2rem)',
           }}
         >
+          {/* Add a background SVG for debugging grid positions */}
+          <svg 
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-0"
+            style={{ padding: 'clamp(0.5rem, 3vmin, 2rem)' }}
+          >
+            <defs>
+              <pattern id="grid" width="20%" height="20%" patternUnits="userSpaceOnUse">
+                <rect width="100%" height="100%" fill="none" stroke="rgba(255,255,255,0.1)" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+
           {gridContent.map((row, rowIndex) =>
             row.map((content, colIndex) => {
               const dotKey = `${rowIndex}-${colIndex}`;
@@ -279,7 +416,7 @@ export default function AnimatedGrid() {
                       stiffness: 400,
                       damping: 30,
                       delay: isSelected ? distance * 0.05 : 0,
-                      opacity: { delay: isSelected ? distance * 0.05 + 0.2 : 0 }
+                      opacity: { duration: 0 }
                     }
                   }}
                   transition={{
