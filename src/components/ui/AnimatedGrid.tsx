@@ -247,19 +247,17 @@ export default function AnimatedGrid() {
     }
   };
 
-  // Clean up on unmount
+  // Start inactivity timer on mount
   useEffect(() => {
+    resetInactivityTimer();
+    
+    // Cleanup function
     return () => {
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
       if (rippleInterval.current) clearInterval(rippleInterval.current);
       if (randomInterval.current) clearInterval(randomInterval.current);
     };
-  }, []);
-
-  // Start inactivity timer on mount
-  useEffect(() => {
-    resetInactivityTimer();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDotClick = (dotKey: string, content: string) => {
     // Clear any ongoing animation
