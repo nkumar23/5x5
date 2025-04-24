@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,107 +28,107 @@ const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
   // Row 1 - Navigation
   'About': {
     text: 'We are a collective of builders, artists, and investors working to shape the future of technology and culture.',
-    link: '/about'
+    link: 'about'
   },
   'Investments': {
     text: 'We invest in early-stage companies building the future of technology, art, and culture.',
-    link: '/investments'
+    link: 'investments'
   },
   'Residencies': {
     text: 'Join our community of creators and innovators in our residency program.',
-    link: '/residencies'
+    link: 'residencies'
   },
   'Grants': {
     text: 'We provide grants to support innovative projects at the intersection of technology and art.',
-    link: '/grants'
+    link: 'grants'
   },
   'Contributing': {
     text: 'Learn how you can contribute to our community and mission.',
-    link: '/contributing'
+    link: 'contributing'
   },
 
   // Row 2 - Team
   'Nikhil': {
     text: 'Founder and managing partner at 5x5. Previously founded and sold multiple startups in AI and developer tools.',
-    link: '/team/nikhil'
+    link: 'team/nikhil'
   },
   'Jon': {
     text: 'Partner at 5x5, focusing on emerging technologies and creative applications of AI.',
-    link: '/team/jon'
+    link: 'team/jon'
   },
   'Harish': {
     text: 'Technical partner specializing in machine learning and computer vision applications.',
-    link: '/team/harish'
+    link: 'team/harish'
   },
   'Adil': {
     text: 'Partner leading our art and culture initiatives, bridging technology with creative expression.',
-    link: '/team/adil'
+    link: 'team/adil'
   },
   'Chandler': {
     text: 'Partner focusing on community building and ecosystem development.',
-    link: '/team/chandler'
+    link: 'team/chandler'
   },
 
   // Row 3 - Projects
   'BGM': {
     text: 'Building the future of background music generation with AI.',
-    link: '/projects/bgm'
+    link: 'projects/bgm'
   },
   'Awaken': {
     text: 'Revolutionizing digital art creation through AI-powered tools.',
-    link: '/projects/awaken'
+    link: 'projects/awaken'
   },
   'Ikenga': {
     text: 'Exploring the intersection of traditional art forms and modern technology.',
-    link: '/projects/ikenga'
+    link: 'projects/ikenga'
   },
   'Coblocks': {
     text: 'Creating collaborative building blocks for the future of work.',
-    link: '/projects/coblocks'
+    link: 'projects/coblocks'
   },
 
   // Row 4 - Portfolio
   'Sculptures': {
     text: 'Discover our collection of digital and physical sculptures.',
-    link: '/portfolio/sculptures'
+    link: 'portfolio/sculptures'
   },
   'Telepath': {
     text: 'Advanced AI communication platform for seamless human-machine interaction.',
-    link: '/portfolio/telepath'
+    link: 'portfolio/telepath'
   },
   'Bot or Not': {
     text: 'Exploring the boundaries between human and AI-generated content.',
-    link: '/portfolio/bot-or-not'
+    link: 'portfolio/bot-or-not'
   },
   'Sidekick': {
     text: 'Your AI-powered personal assistant for creative work.',
-    link: '/portfolio/sidekick'
+    link: 'portfolio/sidekick'
   },
   'Transcript editing': {
     text: 'Revolutionary tools for automated transcript editing and enhancement.',
-    link: '/portfolio/transcript-editing'
+    link: 'portfolio/transcript-editing'
   },
 
   // Row 5 - Recommendations
   'Food recs': {
     text: 'Curated recommendations for unique dining experiences around the world.',
-    link: '/recommendations/food'
+    link: 'recommendations/food'
   },
   'Film recs': {
     text: 'Our favorite films that inspire creativity and innovation.',
-    link: '/recommendations/films'
+    link: 'recommendations/films'
   },
   'Writing recs': {
     text: 'Essential readings on technology, art, and culture.',
-    link: '/recommendations/writing'
+    link: 'recommendations/writing'
   },
   'Art recs': {
     text: 'Must-see artworks and exhibitions that push boundaries.',
-    link: '/recommendations/art'
+    link: 'recommendations/art'
   },
   'Music recs': {
     text: 'Cutting-edge music that defines the future of sound.',
-    link: '/recommendations/music'
+    link: 'recommendations/music'
   }
 };
 
