@@ -34,8 +34,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
+      - name: List directory structure
+        run: |
+          echo "Project structure:"
+          ls -R src/
+      
       - name: Build with Next.js
-        run: npm run build
+        run: |
+          echo "Starting build..."
+          npm run build
+          echo "Build complete. Checking output:"
+          ls -la out/
         env:
           NODE_ENV: production
           NEXT_PUBLIC_BASE_PATH: /5x5_web
