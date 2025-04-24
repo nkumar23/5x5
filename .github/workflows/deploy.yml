@@ -31,18 +31,24 @@ jobs:
           node-version: "20"
           cache: npm
       
-      - name: Install dependencies
-        run: npm ci
+      - name: Clean install dependencies
+        run: |
+          rm -rf node_modules
+          rm -rf .next
+          npm install
+          npm install tailwindcss@latest postcss@latest autoprefixer@latest --save-dev
       
       - name: List directory structure
         run: |
           echo "Project structure:"
           ls -R src/
+          echo "Node modules:"
+          ls -la node_modules/tailwindcss
       
       - name: Build with Next.js
         run: |
           echo "Starting build..."
-          npm run build
+          NODE_OPTIONS="--max_old_space_size=4096" npm run build
           echo "Build complete. Checking output:"
           ls -la out/
         env:
