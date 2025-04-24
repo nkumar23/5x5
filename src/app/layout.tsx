@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "5x5",
   description: "Art meets innovation",
+  metadataBase: new URL(process.env.siteUrl || 'http://localhost:3000'),
 };
 
 export default function RootLayout({

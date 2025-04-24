@@ -16,6 +16,7 @@ concurrency:
 
 env:
   NODE_ENV: production
+  NEXT_PUBLIC_BASE_PATH: /5x5_web
 
 jobs:
   build:
@@ -37,6 +38,8 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          NEXT_PUBLIC_BASE_PATH: /5x5_web
+          SITE_URL: https://nkumar23.github.io/5x5_web
       
       - name: Fix permissions
         run: |
