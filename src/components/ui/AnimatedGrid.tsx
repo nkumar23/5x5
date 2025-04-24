@@ -131,6 +131,42 @@ const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
   }
 };
 
+// Add cursor animation component
+const AnimatedCursor = () => {
+  return (
+    <div className="relative h-48 sm:h-32 w-full overflow-hidden">
+      <motion.div
+        initial={{ x: "-25%", y: "100%" }}
+        animate={{ x: "25%", y: "0%" }}
+        transition={{
+          repeat: Infinity,
+          duration: 2,
+          ease: "easeInOut",
+          repeatType: "reverse"
+        }}
+        className="absolute left-1/2 transform -translate-x-1/2"
+      >
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-white">
+          <path
+            d="M4 4L20 20M4 4L12 4M4 4L4 12"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="absolute bottom-0 left-0 right-0 text-center text-white text-2xl sm:text-3xl font-medium"
+      >
+        click a dot
+      </motion.div>
+    </div>
+  );
+};
+
 export default function AnimatedGrid() {
   const [hoveredDot, setHoveredDot] = useState<string | null>(null);
   const [rippleDot, setRippleDot] = useState<string | null>(null);
@@ -283,15 +319,15 @@ export default function AnimatedGrid() {
   };
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-black">
-      <div className="w-[min(90vw,90vh)] aspect-square relative">
+    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-start sm:justify-center bg-black">
+      <div className="w-[min(90vw,90vh)] aspect-square relative mt-12 sm:mt-0">
         {/* Close button */}
         {selectedDot && (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute top-4 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
+            className="absolute top-0 sm:top-4 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
             onClick={() => {
               setSelectedDot(null);
               setSelectedContent(null);
@@ -309,10 +345,10 @@ export default function AnimatedGrid() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 flex flex-col items-start justify-start p-8 text-white"
-              style={{ marginTop: '100px' }}
+              className="absolute inset-0 flex flex-col items-start justify-start p-4 sm:p-8 text-white"
+              style={{ marginTop: 'clamp(20px, 5vh, 60px)' }}
             >
-              <p className="text-xl mb-6 max-w-[600px]">
+              <p className="text-lg sm:text-xl mb-4 sm:mb-6 max-w-[600px]">
                 {placeholderContent[selectedContent]?.text}
               </p>
               <Link 
@@ -329,8 +365,8 @@ export default function AnimatedGrid() {
           className="grid h-full relative"
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: 'clamp(0.5rem, 3vmin, 2rem)',
-            padding: 'clamp(0.5rem, 3vmin, 2rem)',
+            gap: 'clamp(0.25rem, 2vmin, 2rem)',
+            padding: 'clamp(0.25rem, 2vmin, 2rem)',
           }}
         >
           {/* Add a background SVG for debugging grid positions */}
@@ -361,7 +397,7 @@ export default function AnimatedGrid() {
                   key={dotKey}
                   initial={{ scale: 1, x: 0, y: 0 }}
                   animate={{
-                    scale: isHovered ? 1.5 : isRippling ? 2 : isRandomlySelected ? 2 : isSelected ? (isMainDot ? 1.2 : 0) : 1,
+                    scale: isHovered ? 1.5 : isRippling ? 2 : isRandomlySelected ? 2 : isSelected ? (isMainDot ? 1.2 : 0) : [0.8, 1.1, 0.8],
                     x: isSelected && !isMainDot ? `calc(-${colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
                     y: isSelected && !isMainDot ? `calc(-${rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
                     opacity: isSelected ? (isMainDot ? 1 : 0) : 1,
@@ -372,7 +408,13 @@ export default function AnimatedGrid() {
                     stiffness: 400,
                     damping: 30,
                     duration: 0.3,
-                    delay: isSelected ? distance * 0.05 : 0
+                    delay: isSelected ? distance * 0.05 : (rowIndex + colIndex) * 0.1,
+                    scale: {
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeInOut",
+                      delay: (rowIndex + colIndex) * 0.1
+                    }
                   }}
                   onMouseEnter={() => {
                     if (!selectedDot) {
@@ -416,6 +458,20 @@ export default function AnimatedGrid() {
           )}
         </div>
       </div>
+      
+      {/* Only show the cursor animation on mobile/tablet when no dot is selected */}
+      <AnimatePresence>
+        {!selectedDot && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="w-full lg:hidden"
+          >
+            <AnimatedCursor />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 
