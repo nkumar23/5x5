@@ -1,13 +1,21 @@
 /** @type {import('next').NextConfig} */
+const isProduction = process.env.NODE_ENV === 'production';
+const basePath = isProduction ? '/5x5_web' : '';
+
 const nextConfig = {
   output: 'export',
-  basePath: process.env.NODE_ENV === 'production' ? '/5x5_web' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/5x5_web/' : '',
+  basePath: basePath,
+  assetPrefix: basePath,
   images: {
     unoptimized: true,
   },
   // Required for GitHub Pages
   trailingSlash: true,
+  // Ensure static assets are handled correctly
+  webpack: (config) => {
+    config.output.publicPath = `${basePath}/`;
+    return config;
+  },
 }
 
 module.exports = nextConfig 
