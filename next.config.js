@@ -3,7 +3,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const basePath = isProduction ? '/5x5_web' : '';
 
 const nextConfig = {
-  output: 'export',
+  ...(isProduction ? { output: 'export' } : {}),
   basePath: basePath,
   assetPrefix: basePath,
   images: {
@@ -13,7 +13,9 @@ const nextConfig = {
   trailingSlash: true,
   // Ensure static assets are handled correctly
   webpack: (config) => {
-    config.output.publicPath = `${basePath}/`;
+    if (isProduction) {
+      config.output.publicPath = `${basePath}/`;
+    }
     return config;
   },
 }
