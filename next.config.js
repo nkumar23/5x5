@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
-const isProduction = process.env.NODE_ENV === 'production';
-
 const nextConfig = {
-  output: isProduction ? 'export' : undefined,
-  basePath: isProduction ? '/5x5_web' : '',
-  assetPrefix: isProduction ? '/5x5_web/' : '',
   images: {
     unoptimized: true,
+    domains: ['vercel.com']
   },
-  trailingSlash: true,
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader']
+    });
+    return config;
+  }
 }
 
 module.exports = nextConfig 
