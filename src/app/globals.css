@@ -18,8 +18,6 @@ body {
 }
 
 /* Ensure Tailwind dark mode is enabled */
-@layer base {
-  body {
-    @apply dark:bg-black dark:text-white;
-  }
+body {
+  @apply bg-black text-white;
 }
