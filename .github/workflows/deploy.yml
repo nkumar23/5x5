@@ -42,8 +42,6 @@ jobs:
           npm install --production=false
           echo "Verifying Tailwind installation..."
           npm list tailwindcss postcss autoprefixer
-          echo "Creating Tailwind config if not exists..."
-          [ ! -f tailwind.config.js ] && npx tailwindcss init
       
       - name: Build with Next.js
         run: |
