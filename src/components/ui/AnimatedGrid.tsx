@@ -320,159 +320,100 @@ export default function AnimatedGrid() {
   };
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-start sm:justify-center bg-black">
-      <div className="w-[min(90vw,90vh)] aspect-square relative mt-12 sm:mt-0">
-        {/* Close button */}
-        {selectedDot && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute top-0 sm:top-4 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
-            onClick={() => {
-              setSelectedDot(null);
-              setSelectedContent(null);
-              resetInactivityTimer();
-            }}
-          >
-            ×
-          </motion.button>
-        )}
+    <div className="relative w-full min-h-[80vh] flex flex-col items-center justify-center">
+      {/* Grid Container */}
+      <div className="grid grid-cols-5 gap-8 w-full max-w-4xl mx-auto">
+        {Array.from({ length: 5 }, (_, row) => (
+          Array.from({ length: 5 }, (_, col) => {
+            const dotKey = `${row}-${col}`;
+            const content = gridContent[row][col];
+            const isHovered = hoveredDot === dotKey;
+            const isSelected = selectedDot === dotKey;
+            const isRippling = rippleDot === dotKey;
+            const isRandom = randomDot === dotKey;
 
-        <AnimatePresence>
-          {selectedContent && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 flex flex-col items-start justify-start p-4 sm:p-8 text-white"
-              style={{ marginTop: 'clamp(20px, 5vh, 60px)' }}
-            >
-              <p className="text-lg sm:text-xl mb-4 sm:mb-6 max-w-[600px]">
-                {placeholderContent[selectedContent]?.text}
-              </p>
-              <Link 
-                href={placeholderContent[selectedContent]?.link || '#'} 
-                className="text-blue-500 hover:text-blue-400 transition-colors"
+            return (
+              <motion.div
+                key={dotKey}
+                className="relative flex items-center justify-center"
+                onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
+                onMouseLeave={() => setHoveredDot(null)}
+                onClick={() => handleDotClick(dotKey, content)}
               >
-                Learn more →
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        <div 
-          className="grid h-full relative"
-          style={{
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: 'clamp(0.25rem, 2vmin, 2rem)',
-            padding: 'clamp(0.25rem, 2vmin, 2rem)',
-          }}
-        >
-          {/* Add a background SVG for debugging grid positions */}
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none opacity-0"
-            style={{ padding: 'clamp(0.5rem, 3vmin, 2rem)' }}
-          >
-            <defs>
-              <pattern id="grid" width="20%" height="20%" patternUnits="userSpaceOnUse">
-                <rect width="100%" height="100%" fill="none" stroke="rgba(255,255,255,0.1)" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-
-          {gridContent.map((row, rowIndex) =>
-            row.map((content, colIndex) => {
-              const dotKey = `${rowIndex}-${colIndex}`;
-              const isRippling = rippleDot === dotKey;
-              const isRandomlySelected = randomDot === dotKey;
-              const isHovered = hoveredDot === dotKey;
-              const isSelected = selectedDot !== null;
-              const isMainDot = dotKey === '0-0';
-              const distance = Math.sqrt(rowIndex * rowIndex + colIndex * colIndex);
-              
-              return (
                 <motion.div
-                  key={dotKey}
-                  initial={{ scale: 1, x: 0, y: 0 }}
+                  className={`w-3 h-3 rounded-full cursor-pointer ${
+                    isSelected ? 'bg-blue-500' : 'bg-white'
+                  }`}
                   animate={{
-                    scale: isHovered ? 1.5 : isRippling ? 2 : isRandomlySelected ? 2 : isSelected ? (isMainDot ? 1.2 : 0) : [0.8, 1.1, 0.8],
-                    x: isSelected && !isMainDot ? `calc(-${colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                    y: isSelected && !isMainDot ? `calc(-${rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                    opacity: isSelected ? (isMainDot ? 1 : 0) : 1,
-                    color: isHovered ? '#3B82F6' : '#FFFFFF',
+                    scale: isHovered || isSelected || isRippling || isRandom ? 1.5 : 1,
+                    opacity: isRippling ? 0.7 : 1
                   }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 30,
-                    duration: 0.3,
-                    delay: isSelected ? distance * 0.05 : (rowIndex + colIndex) * 0.1,
-                    scale: {
-                      repeat: Infinity,
-                      duration: 2,
-                      ease: "easeInOut",
-                      delay: (rowIndex + colIndex) * 0.1
-                    }
-                  }}
-                  onMouseEnter={() => {
-                    if (!selectedDot) {
-                      setHoveredDot(dotKey);
-                      if (rippleInterval.current) {
-                        clearInterval(rippleInterval.current);
-                        rippleInterval.current = null;
-                      }
-                      if (randomInterval.current) {
-                        clearInterval(randomInterval.current);
-                        randomInterval.current = null;
-                      }
-                      setRippleDot(null);
-                      setRandomDot(null);
-                      isAnimating.current = false;
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (!selectedDot) {
-                      setHoveredDot(null);
-                      resetInactivityTimer();
-                    }
-                  }}
-                  onClick={() => {
-                    if (!selectedDot) {
-                      handleDotClick(dotKey, content);
-                    }
-                  }}
-                  className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none text-white
-                    ${!selectedDot ? 'cursor-pointer' : 'cursor-default'}`}
-                  whileHover={!selectedDot ? { scale: 1.5 } : {}}
-                >
-                  {(isHovered || (isMainDot && selectedDot)) ? (
-                    <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
-                      {selectedDot && isMainDot ? selectedContent : content}
-                    </span>
-                  ) : '●'}
-                </motion.div>
-              );
-            })
-          )}
-        </div>
+                  transition={{ duration: 0.2 }}
+                />
+                {isHovered && !selectedDot && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-full mt-2 text-white text-sm whitespace-nowrap"
+                  >
+                    {content}
+                  </motion.div>
+                )}
+              </motion.div>
+            );
+          })
+        ))}
       </div>
-      
-      {/* Only show the cursor animation on mobile/tablet when no dot is selected */}
+
+      {/* Selected Content Display */}
       <AnimatePresence>
-        {!selectedDot && (
+        {selectedContent && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="w-full lg:hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 p-4 z-50"
           >
-            <AnimatedCursor />
+            <div className="relative max-w-2xl w-full">
+              {/* Close Button */}
+              <motion.button
+                className="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-white hover:text-blue-500 transition-colors"
+                onClick={() => {
+                  setSelectedDot(null);
+                  setSelectedContent(null);
+                }}
+                whileHover={{ scale: 1.1 }}
+              >
+                ×
+              </motion.button>
+
+              {/* Content */}
+              <motion.div
+                className="text-center space-y-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <h2 className="text-4xl font-bold text-white mb-4">
+                  {selectedContent}
+                </h2>
+                <p className="text-lg text-gray-300">
+                  {placeholderContent[selectedContent].text}
+                </p>
+                <Link 
+                  href={placeholderContent[selectedContent].link}
+                  className="inline-block mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Learn more →
+                </Link>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Show cursor animation when no dot is selected */}
+      {!selectedDot && <AnimatedCursor />}
     </div>
   );
 } 
