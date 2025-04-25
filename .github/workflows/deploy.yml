@@ -37,15 +37,13 @@ jobs:
           echo "Directory contents:"
           ls -la
           echo "Cleaning previous installations..."
-          rm -rf node_modules package-lock.json .next
+          rm -rf node_modules package-lock.json .next out
           echo "Installing dependencies..."
           npm install
           echo "Installing Tailwind CSS..."
           npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
           echo "Verifying installation..."
           npm list tailwindcss postcss autoprefixer
-          echo "Node modules contents:"
-          ls -la node_modules
       
       - name: Build with Next.js
         run: |
@@ -53,6 +51,8 @@ jobs:
           NODE_OPTIONS="--max_old_space_size=4096" npm run build
           echo "Build complete. Checking output:"
           ls -la out/
+          echo "Ensuring .nojekyll exists"
+          touch out/.nojekyll
         env:
           NODE_ENV: production
           NEXT_PUBLIC_BASE_PATH: /5x5_web
