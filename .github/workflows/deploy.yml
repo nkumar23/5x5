@@ -39,11 +39,11 @@ jobs:
           echo "Cleaning previous installations..."
           rm -rf node_modules package-lock.json .next out
           echo "Installing dependencies..."
-          npm install
-          echo "Installing Tailwind CSS..."
-          npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
-          echo "Verifying installation..."
+          npm install --production=false
+          echo "Verifying Tailwind installation..."
           npm list tailwindcss postcss autoprefixer
+          echo "Creating Tailwind config if not exists..."
+          [ ! -f tailwind.config.js ] && npx tailwindcss init
       
       - name: Build with Next.js
         run: |
