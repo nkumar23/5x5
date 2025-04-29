@@ -180,6 +180,7 @@ export default function AnimatedGrid() {
   const isAnimating = useRef(false);
   const usedDots = useRef<Set<string>>(new Set());
   const animationCount = useRef(0);
+  const [isContentExpanded, setIsContentExpanded] = useState(false);
 
   // Function to get the next dot position for ripple
   const getNextDotPosition = (current: string | null) => {
@@ -314,16 +315,154 @@ export default function AnimatedGrid() {
     setRandomDot(null);
     isAnimating.current = false;
 
-    // Animate to selected state
-    setSelectedDot('0-0');
+    // Animate to selected state using the clicked dot position
+    setSelectedDot(dotKey);
     setSelectedContent(content as ContentKey);
   };
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-start sm:justify-center bg-black">
-      <div className="w-[min(90vw,90vh)] aspect-square relative mt-12 sm:mt-0">
-        {/* Close button */}
-        {selectedDot && (
+    <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden">
+      {/* Grid Container - Takes full width but only half height on mobile/tablet */}
+      <div className="w-full h-[50dvh] md:min-h-[100dvh] relative flex items-center justify-center">
+        <div className="w-[min(90vw,90vh)] aspect-square relative">
+          <div 
+            className="grid h-full relative"
+            style={{
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: 'clamp(0.25rem, 2vmin, 2rem)',
+              padding: 'clamp(0.25rem, 2vmin, 2rem)',
+            }}
+          >
+            {gridContent.map((row, rowIndex) =>
+              row.map((content, colIndex) => {
+                const dotKey = `${rowIndex}-${colIndex}`;
+                const isRippling = rippleDot === dotKey;
+                const isRandomlySelected = randomDot === dotKey;
+                const isHovered = hoveredDot === dotKey;
+                const isSelected = selectedDot !== null;
+                const isClickedDot = dotKey === selectedDot;
+                const [selectedRow, selectedCol] = selectedDot ? selectedDot.split('-').map(Number) : [0, 0];
+                
+                return (
+                  <motion.div
+                    key={dotKey}
+                    initial={{ scale: 1, x: 0, y: 0 }}
+                    animate={{
+                      scale: isHovered ? 1.5 : 
+                             isRippling ? 2 : 
+                             isRandomlySelected ? 2 : 
+                             isSelected ? (isClickedDot ? 1.2 : 0) : 1,
+                      x: isSelected && !isClickedDot ? `calc(${selectedCol - colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
+                      y: isSelected && !isClickedDot ? `calc(${selectedRow - rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
+                      opacity: isSelected ? (isClickedDot ? 1 : 0) : 1,
+                      color: isHovered ? '#3B82F6' : '#FFFFFF',
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 30,
+                      duration: 0.3
+                    }}
+                    onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
+                    onMouseLeave={() => !selectedDot && setHoveredDot(null)}
+                    onClick={() => !selectedDot && content && handleDotClick(dotKey, content)}
+                    className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none text-white
+                      ${!selectedDot && content ? 'cursor-pointer' : 'cursor-default'}`}
+                    whileHover={!selectedDot ? { scale: 1.5 } : {}}
+                  >
+                    {/* Add pulsing animation as a separate motion component */}
+                    <motion.div
+                      animate={{ scale: [1, 1.1] }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        ease: "easeInOut"
+                      }}
+                      className="w-full h-full flex items-center justify-center"
+                    >
+                      {(isHovered || (isClickedDot && selectedDot)) ? (
+                        <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
+                          {content}
+                        </span>
+                      ) : '●'}
+                    </motion.div>
+                  </motion.div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Content Box - Slides up from bottom half */}
+      <AnimatePresence>
+        {selectedContent && (
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ 
+              y: isContentExpanded ? "10%" : "50%",
+              height: isContentExpanded ? "90vh" : "50vh"
+            }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 20 }}
+            className="fixed bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl overflow-hidden touch-none md:hidden"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(e, info) => {
+              if (info.offset.y < -50) {
+                setIsContentExpanded(true);
+              } else if (info.offset.y > 50) {
+                setIsContentExpanded(false);
+              }
+            }}
+          >
+            {/* Handle for dragging */}
+            <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-4 mb-2" />
+            
+            {/* Close button */}
+            <motion.button
+              className="absolute top-2 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
+              onClick={() => {
+                setSelectedDot(null);
+                setSelectedContent(null);
+                setIsContentExpanded(false);
+                resetInactivityTimer();
+              }}
+            >
+              ×
+            </motion.button>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto h-full">
+              <h1 className="text-3xl font-bold text-white mb-4">
+                {selectedContent}
+              </h1>
+              <div className="flex flex-col gap-6">
+                <p className="text-gray-300">
+                  {placeholderContent[selectedContent].text}
+                </p>
+                {/* Image Placeholder */}
+                <div className="w-full aspect-video bg-gray-800 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-500">Image Placeholder</span>
+                </div>
+                <Link 
+                  href={placeholderContent[selectedContent].link}
+                  className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Learn more →
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop view remains unchanged */}
+      {selectedContent && (
+        <div className="hidden md:block">
+          {/* Close button */}
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -337,142 +476,59 @@ export default function AnimatedGrid() {
           >
             ×
           </motion.button>
-        )}
 
-        <AnimatePresence>
-          {selectedContent && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 flex flex-col items-start justify-start p-4 sm:p-8 text-white"
-              style={{ marginTop: 'clamp(20px, 5vh, 60px)' }}
-            >
-              <p className="text-lg sm:text-xl mb-4 sm:mb-6 max-w-[600px]">
-                {placeholderContent[selectedContent]?.text}
-              </p>
-              <Link 
-                href={placeholderContent[selectedContent]?.link || '#'} 
-                className="text-blue-500 hover:text-blue-400 transition-colors"
+          <AnimatePresence>
+            {selectedContent && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 p-4 z-50"
               >
-                Learn more →
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        <div 
-          className="grid h-full relative"
-          style={{
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: 'clamp(0.25rem, 2vmin, 2rem)',
-            padding: 'clamp(0.25rem, 2vmin, 2rem)',
-          }}
-        >
-          {/* Add a background SVG for debugging grid positions */}
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none opacity-0"
-            style={{ padding: 'clamp(0.5rem, 3vmin, 2rem)' }}
-          >
-            <defs>
-              <pattern id="grid" width="20%" height="20%" patternUnits="userSpaceOnUse">
-                <rect width="100%" height="100%" fill="none" stroke="rgba(255,255,255,0.1)" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
+                <div className="relative max-w-6xl w-full mx-auto">
+                  {/* Close Button */}
+                  <motion.button
+                    className="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-white hover:text-blue-500 transition-colors text-4xl"
+                    onClick={() => {
+                      setSelectedDot(null);
+                      setSelectedContent(null);
+                      setTimeout(() => {
+                        runRippleAnimation();
+                      }, 100);
+                    }}
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    ×
+                  </motion.button>
 
-          {gridContent.map((row, rowIndex) =>
-            row.map((content, colIndex) => {
-              const dotKey = `${rowIndex}-${colIndex}`;
-              const isRippling = rippleDot === dotKey;
-              const isRandomlySelected = randomDot === dotKey;
-              const isHovered = hoveredDot === dotKey;
-              const isSelected = selectedDot !== null;
-              const isMainDot = dotKey === '0-0';
-              const distance = Math.sqrt(rowIndex * rowIndex + colIndex * colIndex);
-              
-              return (
-                <motion.div
-                  key={dotKey}
-                  initial={{ scale: 1, x: 0, y: 0 }}
-                  animate={{
-                    scale: isHovered ? 1.5 : isRippling ? 2 : isRandomlySelected ? 2 : isSelected ? (isMainDot ? 1.2 : 0) : [0.8, 1.1, 0.8],
-                    x: isSelected && !isMainDot ? `calc(-${colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                    y: isSelected && !isMainDot ? `calc(-${rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                    opacity: isSelected ? (isMainDot ? 1 : 0) : 1,
-                    color: isHovered ? '#3B82F6' : '#FFFFFF',
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 30,
-                    duration: 0.3,
-                    delay: isSelected ? distance * 0.05 : (rowIndex + colIndex) * 0.1,
-                    scale: {
-                      repeat: Infinity,
-                      duration: 2,
-                      ease: "easeInOut",
-                      delay: (rowIndex + colIndex) * 0.1
-                    }
-                  }}
-                  onMouseEnter={() => {
-                    if (!selectedDot) {
-                      setHoveredDot(dotKey);
-                      if (rippleInterval.current) {
-                        clearInterval(rippleInterval.current);
-                        rippleInterval.current = null;
-                      }
-                      if (randomInterval.current) {
-                        clearInterval(randomInterval.current);
-                        randomInterval.current = null;
-                      }
-                      setRippleDot(null);
-                      setRandomDot(null);
-                      isAnimating.current = false;
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (!selectedDot) {
-                      setHoveredDot(null);
-                      resetInactivityTimer();
-                    }
-                  }}
-                  onClick={() => {
-                    if (!selectedDot) {
-                      handleDotClick(dotKey, content);
-                    }
-                  }}
-                  className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none text-white
-                    ${!selectedDot ? 'cursor-pointer' : 'cursor-default'}`}
-                  whileHover={!selectedDot ? { scale: 1.5 } : {}}
-                >
-                  {(isHovered || (isMainDot && selectedDot)) ? (
-                    <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
-                      {selectedDot && isMainDot ? selectedContent : content}
-                    </span>
-                  ) : '●'}
-                </motion.div>
-              );
-            })
-          )}
+                  {/* Content */}
+                  <div className="flex flex-row gap-8 items-start pt-16">
+                    <div className="flex-1 space-y-6">
+                      <h1 className="text-4xl font-bold text-white">
+                        {selectedContent}
+                      </h1>
+                      <p className="text-lg text-gray-300">
+                        {placeholderContent[selectedContent].text}
+                      </p>
+                      <Link 
+                        href={placeholderContent[selectedContent].link}
+                        className="inline-block mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      >
+                        Learn more →
+                      </Link>
+                    </div>
+                    
+                    {/* Image Placeholder */}
+                    <div className="w-[400px] h-[300px] bg-gray-800 rounded-lg flex items-center justify-center">
+                      <span className="text-gray-500">Image Placeholder</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-      
-      {/* Only show the cursor animation on mobile/tablet when no dot is selected */}
-      <AnimatePresence>
-        {!selectedDot && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="w-full lg:hidden"
-          >
-            <AnimatedCursor />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      )}
     </div>
   );
 } 
