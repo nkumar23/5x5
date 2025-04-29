@@ -372,9 +372,9 @@ export default function AnimatedGrid() {
                   >
                     {/* Add pulsing animation as a separate motion component */}
                     <motion.div
-                      animate={{ scale: [1, 1.1] }}
+                      animate={{ scale: [0.6, 1.3] }}
                       transition={{
-                        duration: 2,
+                        duration: 2.5,
                         repeat: Infinity,
                         repeatType: "reverse",
                         ease: "easeInOut"
@@ -399,10 +399,10 @@ export default function AnimatedGrid() {
       <AnimatePresence>
         {selectedContent && (
           <motion.div
-            initial={{ y: "100%" }}
+            initial={{ y: "50%" }}
             animate={{ 
-              y: isContentExpanded ? "10%" : "50%",
-              height: isContentExpanded ? "90vh" : "50vh"
+              y: isContentExpanded ? "10%" : "35%",
+              height: isContentExpanded ? "90vh" : "65vh"
             }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 20 }}
@@ -411,9 +411,9 @@ export default function AnimatedGrid() {
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.2}
             onDragEnd={(e, info) => {
-              if (info.offset.y < -50) {
+              if (info.offset.y < -20) {
                 setIsContentExpanded(true);
-              } else if (info.offset.y > 50) {
+              } else if (info.offset.y > 20) {
                 setIsContentExpanded(false);
               }
             }}
