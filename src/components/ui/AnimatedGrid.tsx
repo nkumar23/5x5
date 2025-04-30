@@ -133,6 +133,75 @@ const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
   }
 };
 
+// Define color palette
+const colorPalette = {
+  'perceptualViolet': '#7B5EEA',
+  'celestialBlue': '#7CD7FF',
+  'infraPink': '#FF69B4',
+  'midnightIndigo': '#1A1B4B',
+  'horizonPeach': '#FFDAB9',
+  'atmosphericWhite': '#FFFFFF',
+  'luminalAmber': '#FFA500'
+};
+
+// Define complementary colors for buttons
+const complementaryColors: Record<keyof typeof colorPalette, keyof typeof colorPalette> = {
+  'perceptualViolet': 'luminalAmber',
+  'celestialBlue': 'perceptualViolet',
+  'infraPink': 'midnightIndigo',
+  'midnightIndigo': 'celestialBlue',
+  'horizonPeach': 'infraPink',
+  'atmosphericWhite': 'perceptualViolet',
+  'luminalAmber': 'midnightIndigo'
+};
+
+// Function to determine if a background color is dark
+const isDarkColor = (color: string) => {
+  const hex = color.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness < 128;
+};
+
+// Map content to colors
+const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
+  // Row 1 - Navigation
+  'About': 'perceptualViolet',
+  'Investments': 'celestialBlue',
+  'Residencies': 'infraPink',
+  'Grants': 'midnightIndigo',
+  'Contributing': 'horizonPeach',
+
+  // Row 2 - Team
+  'Nikhil': 'luminalAmber',
+  'Jon': 'perceptualViolet',
+  'Harish': 'celestialBlue',
+  'Adil': 'infraPink',
+  'Chandler': 'midnightIndigo',
+
+  // Row 3 - Projects
+  'BGM': 'horizonPeach',
+  'Awaken': 'luminalAmber',
+  'Ikenga': 'perceptualViolet',
+  'Coblocks': 'celestialBlue',
+
+  // Row 4 - Portfolio
+  'Sculptures': 'infraPink',
+  'Telepath': 'celestialBlue',
+  'Bot or Not': 'horizonPeach',
+  'Sidekick': 'luminalAmber',
+  'Transcript editing': 'perceptualViolet',
+
+  // Row 5 - Recommendations
+  'Food recs': 'celestialBlue',
+  'Film recs': 'infraPink',
+  'Writing recs': 'midnightIndigo',
+  'Art recs': 'horizonPeach',
+  'Music recs': 'luminalAmber'
+};
+
 // Add cursor animation component
 const AnimatedCursor = () => {
   return (
@@ -416,7 +485,11 @@ export default function AnimatedGrid() {
                       x: isSelected && !isClickedDot ? `calc(${selectedCol - colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
                       y: isSelected && !isClickedDot ? `calc(${selectedRow - rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
                       opacity: shouldHide ? 0 : isSelected ? (isClickedDot ? 1 : 0) : 1,
-                      color: isHovered ? '#3B82F6' : '#FFFFFF',
+                      color: content ? (
+                        isHovered || (isSelected && isClickedDot) ? 
+                          colorPalette[complementaryColors[contentColorMap[content as ContentKey]]] : 
+                          colorPalette.atmosphericWhite
+                      ) : colorPalette.atmosphericWhite,
                     }}
                     transition={{
                       type: "spring",
@@ -427,7 +500,7 @@ export default function AnimatedGrid() {
                     onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
                     onMouseLeave={() => !selectedDot && setHoveredDot(null)}
                     onClick={() => !selectedDot && content && handleDotClick(dotKey, content)}
-                    className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none text-white
+                    className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none
                       ${!selectedDot && content ? 'cursor-pointer' : 'cursor-default'}`}
                     whileHover={!selectedDot ? { scale: 1.5 } : {}}
                   >
@@ -476,7 +549,12 @@ export default function AnimatedGrid() {
 
             {/* Mobile/Tablet View */}
             <motion.div
-              className="content-box fixed bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl overflow-hidden touch-none lg:hidden"
+              className="content-box fixed bottom-0 left-0 right-0 overflow-hidden touch-none lg:hidden"
+              style={{
+                backgroundColor: selectedContent ? colorPalette[contentColorMap[selectedContent]] : 'rgb(17, 24, 39)',
+                borderTopLeftRadius: '1.5rem',
+                borderTopRightRadius: '1.5rem'
+              }}
               initial={{ y: "50%" }}
               animate={{ 
                 y: isContentExpanded ? "10%" : "35%",
@@ -496,11 +574,12 @@ export default function AnimatedGrid() {
               }}
             >
               {/* Handle for dragging */}
-              <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-4 mb-2" />
+              <div className="w-12 h-1 mx-auto mt-4 mb-2" style={{ backgroundColor: colorPalette.atmosphericWhite }} />
               
               {/* Close button */}
               <motion.button
-                className="absolute top-2 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
+                className="absolute top-2 right-4 text-3xl z-50 hover:opacity-80 transition-opacity"
+                style={{ color: colorPalette.atmosphericWhite }}
                 onClick={() => {
                   setSelectedDot(null);
                   setSelectedContent(null);
@@ -513,20 +592,41 @@ export default function AnimatedGrid() {
 
               {/* Content */}
               <div className="p-6 overflow-y-auto h-full">
-                <h1 className="text-3xl font-bold text-white mb-4">
+                <h1 
+                  className="text-3xl font-bold mb-4"
+                  style={{ 
+                    color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
+                      ? colorPalette.atmosphericWhite 
+                      : colorPalette.midnightIndigo 
+                  }}
+                >
                   {selectedContent}
                 </h1>
                 <div className="flex flex-col gap-6">
-                  <p className="text-gray-300">
+                  <p style={{ 
+                    color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
+                      ? `${colorPalette.atmosphericWhite}CC` 
+                      : `${colorPalette.midnightIndigo}CC` 
+                  }}>
                     {placeholderContent[selectedContent].text}
                   </p>
                   {/* Image Placeholder */}
-                  <div className="w-full aspect-video bg-gray-800 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500">Image Placeholder</span>
+                  <div 
+                    className="w-full aspect-video rounded-lg flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(31, 41, 55)',
+                      color: colorPalette.atmosphericWhite
+                    }}
+                  >
+                    <span>Image Placeholder</span>
                   </div>
                   <Link 
                     href={placeholderContent[selectedContent].link}
-                    className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    className="inline-block px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(59, 130, 246)',
+                      color: colorPalette.atmosphericWhite
+                    }}
                   >
                     Learn more →
                   </Link>
@@ -541,10 +641,16 @@ export default function AnimatedGrid() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="relative max-w-6xl w-full mx-auto bg-gray-900 rounded-2xl p-8">
+              <div 
+                className="relative max-w-6xl w-full mx-auto rounded-2xl p-8"
+                style={{
+                  backgroundColor: selectedContent ? colorPalette[contentColorMap[selectedContent]] : 'rgb(17, 24, 39)'
+                }}
+              >
                 {/* Close Button */}
                 <motion.button
-                  className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white hover:text-blue-500 transition-colors text-4xl"
+                  className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-4xl hover:opacity-80 transition-opacity"
+                  style={{ color: colorPalette.atmosphericWhite }}
                   onClick={() => {
                     setSelectedDot(null);
                     setSelectedContent(null);
@@ -557,23 +663,44 @@ export default function AnimatedGrid() {
                 {/* Content */}
                 <div className="flex flex-row gap-8 items-start pt-8">
                   <div className="flex-1 space-y-6">
-                    <h1 className="text-4xl font-bold text-white">
+                    <h1 
+                      className="text-4xl font-bold"
+                      style={{ 
+                        color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
+                          ? colorPalette.atmosphericWhite 
+                          : colorPalette.midnightIndigo 
+                      }}
+                    >
                       {selectedContent}
                     </h1>
-                    <p className="text-lg text-gray-300">
+                    <p style={{ 
+                      color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
+                        ? `${colorPalette.atmosphericWhite}CC` 
+                        : `${colorPalette.midnightIndigo}CC` 
+                    }}>
                       {placeholderContent[selectedContent].text}
                     </p>
                     <Link 
                       href={placeholderContent[selectedContent].link}
-                      className="inline-block mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      className="inline-block mt-6 px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
+                      style={{ 
+                        backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(59, 130, 246)',
+                        color: colorPalette.atmosphericWhite
+                      }}
                     >
                       Learn more →
                     </Link>
                   </div>
                   
                   {/* Image Placeholder */}
-                  <div className="w-[400px] h-[300px] bg-gray-800 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500">Image Placeholder</span>
+                  <div 
+                    className="w-[400px] h-[300px] rounded-lg flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(31, 41, 55)',
+                      color: colorPalette.atmosphericWhite
+                    }}
+                  >
+                    <span>Image Placeholder</span>
                   </div>
                 </div>
               </div>
