@@ -2,11 +2,12 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { Inter } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] });
 
 // Define the grid content
 const gridContent = [
@@ -181,6 +182,7 @@ export default function AnimatedGrid() {
   const usedDots = useRef<Set<string>>(new Set());
   const animationCount = useRef(0);
   const [isContentExpanded, setIsContentExpanded] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Function to get the next dot position for ripple
   const getNextDotPosition = (current: string | null) => {
@@ -297,6 +299,37 @@ export default function AnimatedGrid() {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectedContent) {
+        const contentBox = document.querySelector('.content-box');
+        const mobileContentBox = document.querySelector('.mobile-content-box');
+        // Check both mobile and desktop content boxes
+        const isClickInsideContent = 
+          (contentBox && contentBox.contains(event.target as Node)) ||
+          (mobileContentBox && mobileContentBox.contains(event.target as Node));
+        const isClickInsideGrid = gridRef.current?.contains(event.target as Node);
+        
+        // If click is outside both content box and grid
+        if (!isClickInsideContent && !isClickInsideGrid) {
+          setSelectedDot(null);
+          setSelectedContent(null);
+          setIsContentExpanded(false);
+          resetInactivityTimer();
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside as any);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside as any);
+    };
+  }, [selectedContent]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleDotClick = (dotKey: string, content: string) => {
     // Clear any ongoing animation
     if (rippleInterval.current) {
@@ -321,10 +354,34 @@ export default function AnimatedGrid() {
   };
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden">
-      {/* Grid Container - Takes full width but only half height on mobile/tablet */}
-      <div className="w-full h-[50dvh] md:min-h-[100dvh] relative flex items-center justify-center">
-        <div className="w-[min(90vw,90vh)] aspect-square relative">
+    <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden relative">
+      {/* Noise overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.025] mix-blend-soft-light"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 2000 2000' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          width: '100%',
+          height: '100%',
+          transform: 'scale(1.2)'
+        }}
+      />
+      
+      {/* Grid Container */}
+      <div className="w-full h-[50dvh] lg:min-h-[100dvh] relative flex items-center justify-center">
+        <div className="w-[min(90vw,90vh)] aspect-square relative" ref={gridRef}>
+          {/* Technical annotation */}
+          <motion.div 
+            className={`${jetbrainsMono.className} absolute bottom-0 left-1/2 -translate-x-1/2 text-[0.65rem] text-white/30 tracking-widest uppercase flex items-center gap-2 pb-2`}
+            animate={{
+              opacity: selectedContent ? 0 : 1
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="font-light">EST</span>
+            <span className="font-medium">5.5.25</span>
+          </motion.div>
+
           <div 
             className="grid h-full relative"
             style={{
@@ -343,6 +400,10 @@ export default function AnimatedGrid() {
                 const isClickedDot = dotKey === selectedDot;
                 const [selectedRow, selectedCol] = selectedDot ? selectedDot.split('-').map(Number) : [0, 0];
                 
+                // Hide non-selected dots on mobile/tablet when a dot is selected
+                const isMobileOrTablet = typeof window !== 'undefined' && window.innerWidth < 1024;
+                const shouldHide = isMobileOrTablet && isSelected && !isClickedDot;
+                
                 return (
                   <motion.div
                     key={dotKey}
@@ -354,7 +415,7 @@ export default function AnimatedGrid() {
                              isSelected ? (isClickedDot ? 1.2 : 0) : 1,
                       x: isSelected && !isClickedDot ? `calc(${selectedCol - colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
                       y: isSelected && !isClickedDot ? `calc(${selectedRow - rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                      opacity: isSelected ? (isClickedDot ? 1 : 0) : 1,
+                      opacity: shouldHide ? 0 : isSelected ? (isClickedDot ? 1 : 0) : 1,
                       color: isHovered ? '#3B82F6' : '#FFFFFF',
                     }}
                     transition={{
@@ -381,7 +442,7 @@ export default function AnimatedGrid() {
                       }}
                       className="w-full h-full flex items-center justify-center"
                     >
-                      {(isHovered || (isClickedDot && selectedDot)) ? (
+                      {(isHovered && !selectedDot) ? (
                         <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
                           {content}
                         </span>
@@ -395,140 +456,131 @@ export default function AnimatedGrid() {
         </div>
       </div>
 
-      {/* Content Box - Slides up from bottom half */}
+      {/* Content Box - Responsive for all screen sizes */}
       <AnimatePresence>
         {selectedContent && (
-          <motion.div
-            initial={{ y: "50%" }}
-            animate={{ 
-              y: isContentExpanded ? "10%" : "35%",
-              height: isContentExpanded ? "90vh" : "65vh"
-            }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 20 }}
-            className="fixed bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl overflow-hidden touch-none md:hidden"
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.2}
-            onDragEnd={(e, info) => {
-              if (info.offset.y < -20) {
-                setIsContentExpanded(true);
-              } else if (info.offset.y > 20) {
-                setIsContentExpanded(false);
-              }
-            }}
-          >
-            {/* Handle for dragging */}
-            <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-4 mb-2" />
-            
-            {/* Close button */}
-            <motion.button
-              className="absolute top-2 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.3 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black"
               onClick={() => {
                 setSelectedDot(null);
                 setSelectedContent(null);
                 setIsContentExpanded(false);
                 resetInactivityTimer();
               }}
+            />
+
+            {/* Mobile/Tablet View */}
+            <motion.div
+              className="content-box fixed bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl overflow-hidden touch-none lg:hidden"
+              initial={{ y: "50%" }}
+              animate={{ 
+                y: isContentExpanded ? "10%" : "35%",
+                height: isContentExpanded ? "90vh" : "65vh"
+              }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 20 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, info) => {
+                if (info.offset.y < -20) {
+                  setIsContentExpanded(true);
+                } else if (info.offset.y > 20) {
+                  setIsContentExpanded(false);
+                }
+              }}
             >
-              ×
-            </motion.button>
-
-            {/* Content */}
-            <div className="p-6 overflow-y-auto h-full">
-              <h1 className="text-3xl font-bold text-white mb-4">
-                {selectedContent}
-              </h1>
-              <div className="flex flex-col gap-6">
-                <p className="text-gray-300">
-                  {placeholderContent[selectedContent].text}
-                </p>
-                {/* Image Placeholder */}
-                <div className="w-full aspect-video bg-gray-800 rounded-lg flex items-center justify-center">
-                  <span className="text-gray-500">Image Placeholder</span>
-                </div>
-                <Link 
-                  href={placeholderContent[selectedContent].link}
-                  className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  Learn more →
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop view remains unchanged */}
-      {selectedContent && (
-        <div className="hidden md:block">
-          {/* Close button */}
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute top-0 sm:top-4 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
-            onClick={() => {
-              setSelectedDot(null);
-              setSelectedContent(null);
-              resetInactivityTimer();
-            }}
-          >
-            ×
-          </motion.button>
-
-          <AnimatePresence>
-            {selectedContent && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 p-4 z-50"
+              {/* Handle for dragging */}
+              <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-4 mb-2" />
+              
+              {/* Close button */}
+              <motion.button
+                className="absolute top-2 right-4 text-white text-3xl z-50 hover:text-blue-500 transition-colors"
+                onClick={() => {
+                  setSelectedDot(null);
+                  setSelectedContent(null);
+                  setIsContentExpanded(false);
+                  resetInactivityTimer();
+                }}
               >
-                <div className="relative max-w-6xl w-full mx-auto">
-                  {/* Close Button */}
-                  <motion.button
-                    className="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-white hover:text-blue-500 transition-colors text-4xl"
-                    onClick={() => {
-                      setSelectedDot(null);
-                      setSelectedContent(null);
-                      setTimeout(() => {
-                        runRippleAnimation();
-                      }, 100);
-                    }}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    ×
-                  </motion.button>
+                ×
+              </motion.button>
 
-                  {/* Content */}
-                  <div className="flex flex-row gap-8 items-start pt-16">
-                    <div className="flex-1 space-y-6">
-                      <h1 className="text-4xl font-bold text-white">
-                        {selectedContent}
-                      </h1>
-                      <p className="text-lg text-gray-300">
-                        {placeholderContent[selectedContent].text}
-                      </p>
-                      <Link 
-                        href={placeholderContent[selectedContent].link}
-                        className="inline-block mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                      >
-                        Learn more →
-                      </Link>
-                    </div>
-                    
-                    {/* Image Placeholder */}
-                    <div className="w-[400px] h-[300px] bg-gray-800 rounded-lg flex items-center justify-center">
-                      <span className="text-gray-500">Image Placeholder</span>
-                    </div>
+              {/* Content */}
+              <div className="p-6 overflow-y-auto h-full">
+                <h1 className="text-3xl font-bold text-white mb-4">
+                  {selectedContent}
+                </h1>
+                <div className="flex flex-col gap-6">
+                  <p className="text-gray-300">
+                    {placeholderContent[selectedContent].text}
+                  </p>
+                  {/* Image Placeholder */}
+                  <div className="w-full aspect-video bg-gray-800 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500">Image Placeholder</span>
+                  </div>
+                  <Link 
+                    href={placeholderContent[selectedContent].link}
+                    className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Learn more →
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Desktop View */}
+            <motion.div
+              className="content-box fixed inset-0 hidden lg:flex items-center justify-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="relative max-w-6xl w-full mx-auto bg-gray-900 rounded-2xl p-8">
+                {/* Close Button */}
+                <motion.button
+                  className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white hover:text-blue-500 transition-colors text-4xl"
+                  onClick={() => {
+                    setSelectedDot(null);
+                    setSelectedContent(null);
+                    resetInactivityTimer();
+                  }}
+                >
+                  ×
+                </motion.button>
+
+                {/* Content */}
+                <div className="flex flex-row gap-8 items-start pt-8">
+                  <div className="flex-1 space-y-6">
+                    <h1 className="text-4xl font-bold text-white">
+                      {selectedContent}
+                    </h1>
+                    <p className="text-lg text-gray-300">
+                      {placeholderContent[selectedContent].text}
+                    </p>
+                    <Link 
+                      href={placeholderContent[selectedContent].link}
+                      className="inline-block mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      Learn more →
+                    </Link>
+                  </div>
+                  
+                  {/* Image Placeholder */}
+                  <div className="w-[400px] h-[300px] bg-gray-800 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500">Image Placeholder</span>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 
