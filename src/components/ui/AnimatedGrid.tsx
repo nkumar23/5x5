@@ -202,55 +202,203 @@ const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
   'Music recs': 'luminalAmber'
 };
 
-// Add cursor animation component
-const AnimatedCursor = () => {
+// Dot Component
+interface DotProps {
+  content: string;
+  position: string;
+  isHovered: boolean;
+  isRippling: boolean;
+  isRandomlySelected: boolean;
+  isSelected: boolean;
+  isClickedDot: boolean;
+  shouldHide: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onClick: () => void;
+  selectedPosition?: { row: number; col: number };
+  currentPosition: { row: number; col: number };
+}
+
+const Dot: React.FC<DotProps> = ({
+  content,
+  position,
+  isHovered,
+  isRippling,
+  isRandomlySelected,
+  isSelected,
+  isClickedDot,
+  shouldHide,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  selectedPosition,
+  currentPosition,
+}) => {
+  const { row, col } = currentPosition;
+  const selectedRow = selectedPosition?.row ?? 0;
+  const selectedCol = selectedPosition?.col ?? 0;
+
   return (
-    <div className="relative h-48 sm:h-32 w-full overflow-hidden">
+    <motion.div
+      initial={{ scale: 1, x: 0, y: 0 }}
+      animate={{
+        scale: isHovered ? 1.5 : 
+               isRippling ? 2 : 
+               isRandomlySelected ? 2 : 
+               isSelected ? (isClickedDot ? 1.2 : 0) : 1,
+        x: isSelected && !isClickedDot ? `calc(${selectedCol - col} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
+        y: isSelected && !isClickedDot ? `calc(${selectedRow - row} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
+        opacity: shouldHide ? 0 : isSelected ? (isClickedDot ? 1 : 0) : 1,
+        color: content ? (
+          isHovered || (isSelected && isClickedDot) ? 
+            colorPalette[complementaryColors[contentColorMap[content as ContentKey]]] : 
+            colorPalette.atmosphericWhite
+        ) : colorPalette.atmosphericWhite,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+        duration: 0.3
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
+      className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none
+        ${!isSelected && content ? 'cursor-pointer' : 'cursor-default'}`}
+      whileHover={!isSelected ? { scale: 1.5 } : {}}
+    >
       <motion.div
-        initial={{ x: "-25%", y: "100%" }}
-        animate={{ x: "25%", y: "0%" }}
+        animate={{ scale: [0.6, 1.3] }}
         transition={{
+          duration: 2.5,
           repeat: Infinity,
-          duration: 2,
-          ease: "easeInOut",
-          repeatType: "reverse"
+          repeatType: "reverse",
+          ease: "easeInOut"
         }}
-        className="absolute left-1/2 transform -translate-x-1/2"
+        className="w-full h-full flex items-center justify-center"
       >
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-white">
-          <path
-            d="M4 4L20 20M4 4L12 4M4 4L4 12"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
+        {(isHovered && !isSelected) ? (
+          <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
+            {content}
+          </span>
+        ) : '●'}
       </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="absolute bottom-0 left-0 right-0 text-center text-white text-2xl sm:text-3xl font-medium"
-      >
-        click a dot
-      </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
+// Content Card Component
+interface ContentCardProps {
+  content: ContentKey;
+  isExpanded: boolean;
+  onClose: () => void;
+  onDragEnd: (e: any, info: any) => void;
+}
+
+const ContentCard: React.FC<ContentCardProps> = ({
+  content,
+  isExpanded,
+  onClose,
+  onDragEnd,
+}) => {
+  return (
+    <motion.div
+      className="w-full lg:w-[min(90vw,1200px)] lg:h-auto lg:aspect-[16/9] lg:m-8 pointer-events-auto"
+      initial={{ y: "100%" }}
+      animate={{ 
+        y: 0,
+        height: isExpanded ? "90vh" : "70vh"
+      }}
+      exit={{ y: "100%" }}
+      transition={{ type: "spring", damping: 20 }}
+      drag="y"
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={0.2}
+      onDragEnd={onDragEnd}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      <div
+        className="w-full h-full rounded-t-3xl lg:rounded-2xl overflow-hidden bg-opacity-100"
+        style={{
+          backgroundColor: colorPalette[contentColorMap[content]],
+        }}
+      >
+        {/* Drag handle - only visible on mobile/tablet */}
+        <div className="w-12 h-1 mx-auto mt-3 mb-3 bg-white/30 rounded-full lg:hidden" />
+
+        {/* Close button */}
+        <button
+          className="absolute top-4 right-4 lg:top-6 lg:right-6 w-10 h-10 flex items-center justify-center text-4xl text-white hover:opacity-80 transition-opacity"
+          onClick={onClose}
+        >
+          ×
+        </button>
+
+        {/* Content */}
+        <div className="px-6 pt-2 pb-8 lg:p-12 h-full overflow-y-auto">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex-1 space-y-8">
+              <h1 
+                className="text-3xl lg:text-4xl font-bold leading-relaxed"
+                style={{ 
+                  color: isDarkColor(colorPalette[contentColorMap[content]]) 
+                    ? colorPalette.atmosphericWhite 
+                    : colorPalette.midnightIndigo 
+                }}
+              >
+                {content}
+              </h1>
+              <p className="leading-relaxed" style={{ 
+                color: isDarkColor(colorPalette[contentColorMap[content]]) 
+                  ? `${colorPalette.atmosphericWhite}CC` 
+                  : `${colorPalette.midnightIndigo}CC` 
+              }}>
+                {placeholderContent[content].text}
+              </p>
+              <Link 
+                href={placeholderContent[content].link}
+                className="inline-block px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
+                style={{ 
+                  backgroundColor: colorPalette[complementaryColors[contentColorMap[content]]],
+                  color: colorPalette.atmosphericWhite
+                }}
+              >
+                Learn more →
+              </Link>
+            </div>
+            
+            {/* Image Placeholder */}
+            <div 
+              className="w-full aspect-video lg:w-[400px] lg:h-[300px] rounded-lg flex items-center justify-center"
+              style={{ 
+                backgroundColor: colorPalette[complementaryColors[contentColorMap[content]]],
+                color: colorPalette.atmosphericWhite
+              }}
+            >
+              <span>Image Placeholder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Main Grid Component
 export default function AnimatedGrid() {
   const [hoveredDot, setHoveredDot] = useState<string | null>(null);
   const [rippleDot, setRippleDot] = useState<string | null>(null);
   const [selectedDot, setSelectedDot] = useState<string | null>(null);
   const [selectedContent, setSelectedContent] = useState<ContentKey | null>(null);
   const [randomDot, setRandomDot] = useState<string | null>(null);
+  const [isContentExpanded, setIsContentExpanded] = useState(false);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
   const rippleInterval = useRef<NodeJS.Timeout | null>(null);
   const randomInterval = useRef<NodeJS.Timeout | null>(null);
   const isAnimating = useRef(false);
   const usedDots = useRef<Set<string>>(new Set());
   const animationCount = useRef(0);
-  const [isContentExpanded, setIsContentExpanded] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Function to get the next dot position for ripple
@@ -356,49 +504,17 @@ export default function AnimatedGrid() {
     }
   };
 
-  // Start inactivity timer on mount
-  useEffect(() => {
-    resetInactivityTimer();
-    
-    // Cleanup function
-    return () => {
-      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-      if (rippleInterval.current) clearInterval(rippleInterval.current);
-      if (randomInterval.current) clearInterval(randomInterval.current);
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Handle background click
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    if (selectedContent) {
+      setSelectedDot(null);
+      setSelectedContent(null);
+      setIsContentExpanded(false);
+      resetInactivityTimer();
+    }
+  };
 
-  // Add click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (selectedContent) {
-        const contentBox = document.querySelector('.content-box');
-        const mobileContentBox = document.querySelector('.mobile-content-box');
-        // Check both mobile and desktop content boxes
-        const isClickInsideContent = 
-          (contentBox && contentBox.contains(event.target as Node)) ||
-          (mobileContentBox && mobileContentBox.contains(event.target as Node));
-        const isClickInsideGrid = gridRef.current?.contains(event.target as Node);
-        
-        // If click is outside both content box and grid
-        if (!isClickInsideContent && !isClickInsideGrid) {
-          setSelectedDot(null);
-          setSelectedContent(null);
-          setIsContentExpanded(false);
-          resetInactivityTimer();
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside as any);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside as any);
-    };
-  }, [selectedContent]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  // Handle dot click
   const handleDotClick = (dotKey: string, content: string) => {
     // Clear any ongoing animation
     if (rippleInterval.current) {
@@ -421,6 +537,18 @@ export default function AnimatedGrid() {
     setSelectedDot(dotKey);
     setSelectedContent(content as ContentKey);
   };
+
+  // Start inactivity timer on mount
+  useEffect(() => {
+    resetInactivityTimer();
+    
+    // Cleanup function
+    return () => {
+      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+      if (rippleInterval.current) clearInterval(rippleInterval.current);
+      if (randomInterval.current) clearInterval(randomInterval.current);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden relative">
@@ -467,61 +595,32 @@ export default function AnimatedGrid() {
                 const isHovered = hoveredDot === dotKey;
                 const isSelected = selectedDot !== null;
                 const isClickedDot = dotKey === selectedDot;
-                const [selectedRow, selectedCol] = selectedDot ? selectedDot.split('-').map(Number) : [0, 0];
-                
-                // Hide non-selected dots on mobile/tablet when a dot is selected
                 const isMobileOrTablet = typeof window !== 'undefined' && window.innerWidth < 1024;
                 const shouldHide = isMobileOrTablet && isSelected && !isClickedDot;
                 
                 return (
-                  <motion.div
+                  <Dot
                     key={dotKey}
-                    initial={{ scale: 1, x: 0, y: 0 }}
-                    animate={{
-                      scale: isHovered ? 1.5 : 
-                             isRippling ? 2 : 
-                             isRandomlySelected ? 2 : 
-                             isSelected ? (isClickedDot ? 1.2 : 0) : 1,
-                      x: isSelected && !isClickedDot ? `calc(${selectedCol - colIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                      y: isSelected && !isClickedDot ? `calc(${selectedRow - rowIndex} * (100% + clamp(0.5rem, 3vmin, 2rem)))` : 0,
-                      opacity: shouldHide ? 0 : isSelected ? (isClickedDot ? 1 : 0) : 1,
-                      color: content ? (
-                        isHovered || (isSelected && isClickedDot) ? 
-                          colorPalette[complementaryColors[contentColorMap[content as ContentKey]]] : 
-                          colorPalette.atmosphericWhite
-                      ) : colorPalette.atmosphericWhite,
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 30,
-                      duration: 0.3
-                    }}
+                    content={content}
+                    position={dotKey}
+                    isHovered={isHovered}
+                    isRippling={isRippling}
+                    isRandomlySelected={isRandomlySelected}
+                    isSelected={isSelected}
+                    isClickedDot={isClickedDot}
+                    shouldHide={shouldHide}
                     onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
                     onMouseLeave={() => !selectedDot && setHoveredDot(null)}
                     onClick={() => !selectedDot && content && handleDotClick(dotKey, content)}
-                    className={`flex items-center justify-center aspect-square text-[clamp(1rem,5vmin,2.5rem)] select-none
-                      ${!selectedDot && content ? 'cursor-pointer' : 'cursor-default'}`}
-                    whileHover={!selectedDot ? { scale: 1.5 } : {}}
-                  >
-                    {/* Add pulsing animation as a separate motion component */}
-                    <motion.div
-                      animate={{ scale: [0.6, 1.3] }}
-                      transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        ease: "easeInOut"
-                      }}
-                      className="w-full h-full flex items-center justify-center"
-                    >
-                      {(isHovered && !selectedDot) ? (
-                        <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
-                          {content}
-                        </span>
-                      ) : '●'}
-                    </motion.div>
-                  </motion.div>
+                    selectedPosition={selectedDot ? {
+                      row: parseInt(selectedDot.split('-')[0]),
+                      col: parseInt(selectedDot.split('-')[1])
+                    } : undefined}
+                    currentPosition={{
+                      row: rowIndex,
+                      col: colIndex
+                    }}
+                  />
                 );
               })
             )}
@@ -529,182 +628,43 @@ export default function AnimatedGrid() {
         </div>
       </div>
 
-      {/* Content Box - Responsive for all screen sizes */}
+      {/* Content Card Layer */}
       <AnimatePresence>
         {selectedContent && (
           <>
-            {/* Overlay */}
-            <motion.div
+            {/* Background overlay - lower z-index */}
+            <motion.div 
+              className="fixed inset-0 z-30 bg-black/30"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.3 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black"
-              onClick={() => {
-                setSelectedDot(null);
-                setSelectedContent(null);
-                setIsContentExpanded(false);
-                resetInactivityTimer();
-              }}
+              onMouseDown={handleBackgroundClick}
+              onClick={(e) => e.preventDefault()}
             />
 
-            {/* Mobile/Tablet View */}
-            <motion.div
-              className="content-box fixed bottom-0 left-0 right-0 overflow-hidden touch-none lg:hidden"
-              style={{
-                backgroundColor: selectedContent ? colorPalette[contentColorMap[selectedContent]] : 'rgb(17, 24, 39)',
-                borderTopLeftRadius: '1.5rem',
-                borderTopRightRadius: '1.5rem'
-              }}
-              initial={{ y: "50%" }}
-              animate={{ 
-                y: isContentExpanded ? "10%" : "35%",
-                height: isContentExpanded ? "90vh" : "65vh"
-              }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 20 }}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(e, info) => {
-                if (info.offset.y < -20) {
-                  setIsContentExpanded(true);
-                } else if (info.offset.y > 20) {
-                  setIsContentExpanded(false);
-                }
-              }}
+            {/* Content Card - higher z-index */}
+            <div 
+              className="fixed inset-0 z-40 h-full flex items-end lg:items-center justify-center pointer-events-none"
+              onMouseDown={(e) => e.stopPropagation()}
             >
-              {/* Handle for dragging */}
-              <div className="w-12 h-1 mx-auto mt-4 mb-2" style={{ backgroundColor: colorPalette.atmosphericWhite }} />
-              
-              {/* Close button */}
-              <motion.button
-                className="absolute top-2 right-4 text-3xl z-50 hover:opacity-80 transition-opacity"
-                style={{ color: colorPalette.atmosphericWhite }}
-                onClick={() => {
+              <ContentCard
+                content={selectedContent}
+                isExpanded={isContentExpanded}
+                onClose={() => {
                   setSelectedDot(null);
                   setSelectedContent(null);
                   setIsContentExpanded(false);
                   resetInactivityTimer();
                 }}
-              >
-                ×
-              </motion.button>
-
-              {/* Content */}
-              <div className="p-6 overflow-y-auto h-full">
-                <h1 
-                  className="text-3xl font-bold mb-4"
-                  style={{ 
-                    color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
-                      ? colorPalette.atmosphericWhite 
-                      : colorPalette.midnightIndigo 
-                  }}
-                >
-                  {selectedContent}
-                </h1>
-                <div className="flex flex-col gap-6">
-                  <p style={{ 
-                    color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
-                      ? `${colorPalette.atmosphericWhite}CC` 
-                      : `${colorPalette.midnightIndigo}CC` 
-                  }}>
-                    {placeholderContent[selectedContent].text}
-                  </p>
-                  {/* Image Placeholder */}
-                  <div 
-                    className="w-full aspect-video rounded-lg flex items-center justify-center"
-                    style={{ 
-                      backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(31, 41, 55)',
-                      color: colorPalette.atmosphericWhite
-                    }}
-                  >
-                    <span>Image Placeholder</span>
-                  </div>
-                  <Link 
-                    href={placeholderContent[selectedContent].link}
-                    className="inline-block px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
-                    style={{ 
-                      backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(59, 130, 246)',
-                      color: colorPalette.atmosphericWhite
-                    }}
-                  >
-                    Learn more →
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Desktop View */}
-            <motion.div
-              className="content-box fixed inset-0 hidden lg:flex items-center justify-center z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div 
-                className="relative max-w-6xl w-full mx-auto rounded-2xl p-8"
-                style={{
-                  backgroundColor: selectedContent ? colorPalette[contentColorMap[selectedContent]] : 'rgb(17, 24, 39)'
+                onDragEnd={(e, info) => {
+                  if (info.offset.y < -20) {
+                    setIsContentExpanded(true);
+                  } else if (info.offset.y > 20) {
+                    setIsContentExpanded(false);
+                  }
                 }}
-              >
-                {/* Close Button */}
-                <motion.button
-                  className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-4xl hover:opacity-80 transition-opacity"
-                  style={{ color: colorPalette.atmosphericWhite }}
-                  onClick={() => {
-                    setSelectedDot(null);
-                    setSelectedContent(null);
-                    resetInactivityTimer();
-                  }}
-                >
-                  ×
-                </motion.button>
-
-                {/* Content */}
-                <div className="flex flex-row gap-8 items-start pt-8">
-                  <div className="flex-1 space-y-6">
-                    <h1 
-                      className="text-4xl font-bold"
-                      style={{ 
-                        color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
-                          ? colorPalette.atmosphericWhite 
-                          : colorPalette.midnightIndigo 
-                      }}
-                    >
-                      {selectedContent}
-                    </h1>
-                    <p style={{ 
-                      color: selectedContent && isDarkColor(colorPalette[contentColorMap[selectedContent]]) 
-                        ? `${colorPalette.atmosphericWhite}CC` 
-                        : `${colorPalette.midnightIndigo}CC` 
-                    }}>
-                      {placeholderContent[selectedContent].text}
-                    </p>
-                    <Link 
-                      href={placeholderContent[selectedContent].link}
-                      className="inline-block mt-6 px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
-                      style={{ 
-                        backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(59, 130, 246)',
-                        color: colorPalette.atmosphericWhite
-                      }}
-                    >
-                      Learn more →
-                    </Link>
-                  </div>
-                  
-                  {/* Image Placeholder */}
-                  <div 
-                    className="w-[400px] h-[300px] rounded-lg flex items-center justify-center"
-                    style={{ 
-                      backgroundColor: selectedContent ? colorPalette[complementaryColors[contentColorMap[selectedContent]]] : 'rgb(31, 41, 55)',
-                      color: colorPalette.atmosphericWhite
-                    }}
-                  >
-                    <span>Image Placeholder</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              />
+            </div>
           </>
         )}
       </AnimatePresence>
