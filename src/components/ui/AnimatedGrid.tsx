@@ -327,14 +327,6 @@ const ContentCard: React.FC<ContentCardProps> = ({
         {/* Drag handle - only visible on mobile/tablet */}
         <div className="w-12 h-1 mx-auto mt-3 mb-3 bg-white/30 rounded-full lg:hidden" />
 
-        {/* Close button */}
-        <button
-          className="absolute top-4 right-4 lg:top-6 lg:right-6 w-10 h-10 flex items-center justify-center text-4xl text-white hover:opacity-80 transition-opacity"
-          onClick={onClose}
-        >
-          ×
-        </button>
-
         {/* Content */}
         <div className="px-6 pt-2 pb-8 lg:p-12 h-full overflow-y-auto">
           <div className="flex flex-col lg:flex-row gap-8">
