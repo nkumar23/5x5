@@ -399,6 +399,27 @@ export default function AnimatedGrid() {
     };
   }, [selectedContent]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Add effect to control body scroll when content is expanded
+  useEffect(() => {
+    if (selectedContent) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    };
+  }, [selectedContent]);
+
   const handleDotClick = (dotKey: string, content: string) => {
     // Clear any ongoing animation
     if (rippleInterval.current) {
@@ -436,8 +457,8 @@ export default function AnimatedGrid() {
         }}
       />
       
-      {/* Grid Container */}
-      <div className="w-full h-[50dvh] lg:min-h-[100dvh] relative flex items-center justify-center">
+      {/* Grid Container - Add touch-none when content is selected */}
+      <div className={`w-full h-[50dvh] lg:min-h-[100dvh] relative flex items-center justify-center ${selectedContent ? 'touch-none' : ''}`}>
         <div className="w-[min(90vw,90vh)] aspect-square relative" ref={gridRef}>
           {/* Technical annotation */}
           <motion.div 
@@ -533,12 +554,12 @@ export default function AnimatedGrid() {
       <AnimatePresence>
         {selectedContent && (
           <>
-            {/* Overlay */}
+            {/* Overlay - Add touch-none */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.3 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black"
+              className="fixed inset-0 bg-black touch-none"
               onClick={() => {
                 setSelectedDot(null);
                 setSelectedContent(null);
@@ -547,13 +568,14 @@ export default function AnimatedGrid() {
               }}
             />
 
-            {/* Mobile/Tablet View */}
+            {/* Mobile/Tablet View - Update touch handling */}
             <motion.div
-              className="content-box fixed bottom-0 left-0 right-0 overflow-hidden touch-none lg:hidden"
+              className="content-box fixed bottom-0 left-0 right-0 touch-pan-y lg:hidden"
               style={{
                 backgroundColor: selectedContent ? colorPalette[contentColorMap[selectedContent]] : 'rgb(17, 24, 39)',
                 borderTopLeftRadius: '1.5rem',
-                borderTopRightRadius: '1.5rem'
+                borderTopRightRadius: '1.5rem',
+                overscrollBehavior: 'contain'
               }}
               initial={{ y: "50%" }}
               animate={{ 
@@ -590,8 +612,8 @@ export default function AnimatedGrid() {
                 ×
               </motion.button>
 
-              {/* Content */}
-              <div className="p-6 overflow-y-auto h-full">
+              {/* Content - Update overflow handling */}
+              <div className="p-6 overflow-y-auto overscroll-contain h-full">
                 <h1 
                   className="text-3xl font-bold mb-4"
                   style={{ 
