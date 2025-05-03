@@ -2,28 +2,28 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Bricolage_Grotesque } from 'next/font/google';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-const inter = Inter({ subsets: ['latin'] });
-const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] });
+const bricolage = Bricolage_Grotesque({ subsets: ['latin'] });
 
 // Define the grid content
-const gridContent = [
-  ['About', 'Investments', 'Residencies', 'Grants', 'Contributing'],
-  ['Nikhil', 'Jon', 'Harish', 'Adil', 'Chandler'],
-  ['BGM', 'Awaken', 'Ikenga', 'Coblocks', 'Ikenga'],
-  ['Sculptures', 'Telepath', 'Bot or Not', 'Sidekick', 'Transcript editing'],
-  ['Food recs', 'Film recs', 'Writing recs', 'Art recs', 'Music recs'],
-];
+type ContentKey =
+  | 'About' | 'Companies' | 'Residency' | 'Grants' | 'Contributors'
+  | 'Quarantine Dreams' | 'Dancing Monkey' | 'Power to the People' | 'Experiments in Reincarnation' | 'Made You Think'
+  | 'BGM' | 'Awaken' | 'Ikenga Wines' | 'Kira' | 'Mount Lawrence'
+  | 'Fullstack Human' | 'Black Brick Project' | 'Double Zero' | 'Telepath'
+  | 'Ship By Friday' | 'Etched' | 'Bot or Not' | 'Onwards And Beyond' | 'Original music';
 
-type ContentKey = 
-  | 'About' | 'Investments' | 'Residencies' | 'Grants' | 'Contributing'  // Row 1
-  | 'Nikhil' | 'Jon' | 'Harish' | 'Adil' | 'Chandler'                  // Row 2
-  | 'BGM' | 'Awaken' | 'Ikenga' | 'Coblocks'                           // Row 3
-  | 'Sculptures' | 'Telepath' | 'Bot or Not' | 'Sidekick' | 'Transcript editing'  // Row 4
-  | 'Food recs' | 'Film recs' | 'Writing recs' | 'Art recs' | 'Music recs';      // Row 5
+const gridContent: ContentKey[][] = [
+  ['About', 'Companies', 'Residency', 'Grants', 'Contributors'],
+  ['Quarantine Dreams', 'Dancing Monkey', 'Power to the People', 'Experiments in Reincarnation', 'Made You Think'],
+  ['BGM', 'Awaken', 'Ikenga Wines', 'Kira', 'Mount Lawrence'],
+  ['Fullstack Human', 'Black Brick Project', 'Double Zero', 'Telepath', 'Bot or Not'],
+  ['Ship By Friday', 'Etched', 'Onwards And Beyond', 'Original music', 'Bot or Not'],
+];
 
 const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
   // Row 1 - Navigation
@@ -31,11 +31,11 @@ const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
     text: 'We are a collective of builders, artists, and investors working to shape the future of technology and culture.',
     link: 'about'
   },
-  'Investments': {
+  'Companies': {
     text: 'We invest in early-stage companies building the future of technology, art, and culture.',
     link: 'investments'
   },
-  'Residencies': {
+  'Residency': {
     text: 'Join our community of creators and innovators in our residency program.',
     link: 'residencies'
   },
@@ -43,93 +43,93 @@ const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
     text: 'We provide grants to support innovative projects at the intersection of technology and art.',
     link: 'grants'
   },
-  'Contributing': {
+  'Contributors': {
     text: 'Learn how you can contribute to our community and mission.',
     link: 'contributing'
   },
 
   // Row 2 - Team
-  'Nikhil': {
-    text: 'Founder and managing partner at 5x5. Previously founded and sold multiple startups in AI and developer tools.',
-    link: 'team/nikhil'
+  'Quarantine Dreams': {
+    text: 'A Pandemic-era fever dream music video with both music and visuals created by Nikhil Kumar using a variety of technologies, instruments, and recording techniques to present a disorienting glimpse into the mundanity of lockdown',
+    link: 'https://www.youtube.com/watch?v=I5AjdG9m8bk'
   },
-  'Jon': {
-    text: 'Partner at 5x5, focusing on emerging technologies and creative applications of AI.',
-    link: 'team/jon'
+  'Dancing Monkey': {
+    text: 'The Dancing Monkey is a new film adapted from Eugene O\'Neill\'s classic groundbreaking play, \'The Hairy Ape.\' Set in the present, the film follows Wayne, a factory worker with an important decision to make. After being compared to a dancing monkey by one of the factory owners, Wayne sets out to find an answer to a question that will decide his fate and those around him.',
+    link: 'https://www.thedancingmonkeyfilm.com/'
   },
-  'Harish': {
-    text: 'Technical partner specializing in machine learning and computer vision applications.',
-    link: 'team/harish'
+  'Power to the People': {
+    text: 'There\'s a systems design term and web-era phrase — graceful degradation — that suddenly feels like an important core ethic for civilization. In Europe and USA, we\'re being presented with two divergent visions of how society navigates technology… Read more.',
+    link: 'https://x.com/hv23/status/1918141243395019036'
   },
-  'Adil': {
-    text: 'Partner leading our art and culture initiatives, bridging technology with creative expression.',
-    link: 'team/adil'
+  'Experiments in Reincarnation': {
+    text: 'Experiments in Reincarnation is a sculptural exploration of transformation -- of bodies, of attachments, of scale. It began with a fascination: how do we define who we are over time?… See more.',
+    link: 'https://vimeo.com/558070075'
   },
-  'Chandler': {
-    text: 'Partner focusing on community building and ecosystem development.',
-    link: 'team/chandler'
+  'Made You Think': {
+    text: 'Join Nat, Neil, and Adil as they examine ideas that – as the name suggests – make you think. Episodes will explore books, essays, podcasts, and anything else that warrants further discussion, teaches something useful, or at the very least, exercises our brain muscles.',
+    link: 'https://www.madeyouthinkpodcast.com/'
   },
 
   // Row 3 - Projects
   'BGM': {
-    text: 'Building the future of background music generation with AI.',
-    link: 'projects/bgm'
+    text: 'The first flour mill to open in Brooklyn since the 1800s, featuring a new American-made stone mill and all locally sourced grains from Northeastern farmers',
+    link: 'https://brooklyngranaryandmill.com/'
   },
   'Awaken': {
-    text: 'Revolutionizing digital art creation through AI-powered tools.',
-    link: 'projects/awaken'
+    text: 'The best crypto tax software for the Solana ecosystem and beyond',
+    link: 'https://awaken.tax/'
   },
-  'Ikenga': {
-    text: 'Exploring the intersection of traditional art forms and modern technology.',
-    link: 'projects/ikenga'
+  'Ikenga Wines': {
+    text: 'The first biodesigned palm wine, made in America without any palm. Ikenga is bringing the varied flavors of Nigerian palm wine to the US using sophisticated fermentation techniques that produce the familiar flavors of palm wine in environmentally sustainable ways… Learn more.',
+    link: 'https://ikengawines.com/'
   },
-  'Coblocks': {
-    text: 'Creating collaborative building blocks for the future of work.',
-    link: 'projects/coblocks'
+  'Kira': {
+    text: 'Kira is helping real estate agents do more for their customers with the power of AI in their palms.',
+    link: 'https://withkira.com/'
   },
 
   // Row 4 - Portfolio
-  'Sculptures': {
-    text: 'Discover our collection of digital and physical sculptures.',
-    link: 'portfolio/sculptures'
+  'Mount Lawrence': {
+    text: 'Mount Lawrence follows filmmaker Chandler Wild\'s 6,700 mile bicycle ride from New York City to the end of the road in Alaska to reconnect with his adventure loving father, a victim of suicide.',
+    link: 'https://www.amazon.com/Mount-Lawrence-Chandler-Wild/dp/B09RFT4JP9'
   },
-  'Telepath': {
+  'Fullstack Human': {
     text: 'Advanced AI communication platform for seamless human-machine interaction.',
     link: 'portfolio/telepath'
   },
-  'Bot or Not': {
+  'Black Brick Project': {
     text: 'Exploring the boundaries between human and AI-generated content.',
     link: 'portfolio/bot-or-not'
   },
-  'Sidekick': {
+  'Double Zero': {
     text: 'Your AI-powered personal assistant for creative work.',
     link: 'portfolio/sidekick'
   },
-  'Transcript editing': {
+  'Telepath': {
     text: 'Revolutionary tools for automated transcript editing and enhancement.',
     link: 'portfolio/transcript-editing'
   },
 
   // Row 5 - Recommendations
-  'Food recs': {
+  'Ship By Friday': {
     text: 'Curated recommendations for unique dining experiences around the world.',
     link: 'recommendations/food'
   },
-  'Film recs': {
+  'Etched': {
     text: 'Our favorite films that inspire creativity and innovation.',
     link: 'recommendations/films'
   },
-  'Writing recs': {
+  'Bot or Not': {
     text: 'Essential readings on technology, art, and culture.',
-    link: 'recommendations/writing'
+    link: 'https://botornot.is/'
   },
-  'Art recs': {
-    text: 'Must-see artworks and exhibitions that push boundaries.',
-    link: 'recommendations/art'
+  'Onwards And Beyond': {
+    text: 'Nikhil blogged his backpacking trip in 2012 and sporadically updated it until 2015. Take a trip in the Time Machine here.',
+    link: 'https://onwardsandbeyond-blog.tumblr.com/'
   },
-  'Music recs': {
-    text: 'Cutting-edge music that defines the future of sound.',
-    link: 'recommendations/music'
+  'Original music': {
+    text: 'Some music made by Nikhil over the years',
+    link: 'https://soundcloud.com/nkumar23'
   }
 };
 
@@ -167,39 +167,30 @@ const isDarkColor = (color: string) => {
 
 // Map content to colors
 const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
-  // Row 1 - Navigation
   'About': 'perceptualViolet',
-  'Investments': 'celestialBlue',
-  'Residencies': 'infraPink',
+  'Companies': 'celestialBlue',
+  'Residency': 'infraPink',
   'Grants': 'midnightIndigo',
-  'Contributing': 'horizonPeach',
-
-  // Row 2 - Team
-  'Nikhil': 'luminalAmber',
-  'Jon': 'perceptualViolet',
-  'Harish': 'celestialBlue',
-  'Adil': 'infraPink',
-  'Chandler': 'midnightIndigo',
-
-  // Row 3 - Projects
+  'Contributors': 'horizonPeach',
+  'Quarantine Dreams': 'luminalAmber',
+  'Dancing Monkey': 'perceptualViolet',
+  'Power to the People': 'celestialBlue',
+  'Experiments in Reincarnation': 'infraPink',
+  'Made You Think': 'midnightIndigo',
   'BGM': 'horizonPeach',
   'Awaken': 'luminalAmber',
-  'Ikenga': 'perceptualViolet',
-  'Coblocks': 'celestialBlue',
-
-  // Row 4 - Portfolio
-  'Sculptures': 'infraPink',
-  'Telepath': 'celestialBlue',
-  'Bot or Not': 'horizonPeach',
-  'Sidekick': 'luminalAmber',
-  'Transcript editing': 'perceptualViolet',
-
-  // Row 5 - Recommendations
-  'Food recs': 'celestialBlue',
-  'Film recs': 'infraPink',
-  'Writing recs': 'midnightIndigo',
-  'Art recs': 'horizonPeach',
-  'Music recs': 'luminalAmber'
+  'Ikenga Wines': 'perceptualViolet',
+  'Kira': 'celestialBlue',
+  'Mount Lawrence': 'infraPink',
+  'Fullstack Human': 'midnightIndigo',
+  'Black Brick Project': 'horizonPeach',
+  'Double Zero': 'luminalAmber',
+  'Telepath': 'perceptualViolet',
+  'Ship By Friday': 'celestialBlue',
+  'Etched': 'infraPink',
+  'Bot or Not': 'midnightIndigo',
+  'Onwards And Beyond': 'horizonPeach',
+  'Original music': 'luminalAmber',
 };
 
 // Dot Component
@@ -279,7 +270,7 @@ const Dot: React.FC<DotProps> = ({
         className="w-full h-full flex items-center justify-center"
       >
         {(isHovered && !isSelected) ? (
-          <span className={`${inter.className} text-[0.4em] font-medium text-center`}>
+          <span className={`${bricolage.className} text-[0.4em] font-medium text-center`}>
             {content}
           </span>
         ) : '●'}
@@ -358,17 +349,6 @@ const ContentCard: React.FC<ContentCardProps> = ({
               >
                 Learn more →
               </Link>
-            </div>
-            
-            {/* Image Placeholder */}
-            <div 
-              className="w-full aspect-video lg:w-[400px] lg:h-[300px] rounded-lg flex items-center justify-center"
-              style={{ 
-                backgroundColor: colorPalette[complementaryColors[contentColorMap[content]]],
-                color: colorPalette.atmosphericWhite
-              }}
-            >
-              <span>Image Placeholder</span>
             </div>
           </div>
         </div>
@@ -561,7 +541,7 @@ export default function AnimatedGrid() {
         <div className="w-[min(90vw,90vh)] aspect-square relative" ref={gridRef}>
           {/* Technical annotation */}
           <motion.div 
-            className={`${jetbrainsMono.className} absolute bottom-0 left-1/2 -translate-x-1/2 text-[0.65rem] text-white/30 tracking-widest uppercase flex items-center gap-2 pb-2`}
+            className={`${bricolage.className} absolute bottom-0 left-1/2 -translate-x-1/2 text-[0.65rem] text-white/30 tracking-widest uppercase flex items-center gap-2 pb-2`}
             animate={{
               opacity: selectedContent ? 0 : 1
             }}
