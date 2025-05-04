@@ -160,6 +160,7 @@ export const colorPalette = {
   'perceptualViolet': '#7B5EEA',
   'celestialBlue': '#7CD7FF',
   'infraPink': '#FF69B4',
+  'midnightIndigo': '#1A1B4B',
   'horizonPeach': '#FFDAB9',
   'atmosphericWhite': '#FFFFFF',
   'luminalAmber': '#FFA500',
@@ -170,10 +171,11 @@ export const colorPalette = {
 const complementaryColors: Record<keyof typeof colorPalette, keyof typeof colorPalette> = {
   'perceptualViolet': 'luminalAmber',
   'celestialBlue': 'perceptualViolet',
-  'infraPink': 'pastelGreen',
+  'infraPink': 'midnightIndigo',
+  'midnightIndigo': 'celestialBlue',
   'horizonPeach': 'infraPink',
   'atmosphericWhite': 'perceptualViolet',
-  'luminalAmber': 'pastelGreen',
+  'luminalAmber': 'midnightIndigo',
   'pastelGreen': 'infraPink',
 };
 
@@ -315,6 +317,22 @@ const ContentCard: React.FC<ContentCardProps> = ({
   onClose,
   onDragEnd,
 }) => {
+  const getCardBackgroundColor = (content: ContentKey) => {
+    if (["Made You Think", "Fullstack Human", "Bot or Not"].includes(content)) {
+      return colorPalette.midnightIndigo;
+    }
+    return colorPalette[contentColorMap[content]];
+  };
+
+  const getCardTextColor = (content: ContentKey) => {
+    if (["Made You Think", "Fullstack Human", "Bot or Not"].includes(content)) {
+      return colorPalette.atmosphericWhite;
+    }
+    return isDarkColor(colorPalette[contentColorMap[content]])
+      ? colorPalette.atmosphericWhite
+      : colorPalette.midnightIndigo;
+  };
+
   return (
     <motion.div
       className="w-full lg:w-[min(90vw,1200px)] lg:h-auto lg:aspect-[16/9] lg:m-8 pointer-events-auto"
@@ -334,7 +352,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
       <div
         className="w-full h-full rounded-t-3xl lg:rounded-2xl overflow-hidden bg-opacity-100"
         style={{
-          backgroundColor: colorPalette[contentColorMap[content]],
+          backgroundColor: getCardBackgroundColor(content),
         }}
       >
         {/* Drag handle - only visible on mobile/tablet */}
@@ -347,9 +365,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
               <h1 
                 className="text-3xl lg:text-4xl font-bold leading-relaxed"
                 style={{ 
-                  color: isDarkColor(colorPalette[contentColorMap[content]]) 
-                    ? colorPalette.atmosphericWhite 
-                    : colorPalette.pastelGreen 
+                  color: getCardTextColor(content)
                 }}
               >
                 {content}
@@ -357,9 +373,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
               {content === 'Contributors' ? (
                 <>
                   <p className="leading-relaxed" style={{
-                    color: isDarkColor(colorPalette[contentColorMap[content]])
-                      ? `${colorPalette.atmosphericWhite}CC`
-                      : `${colorPalette.pastelGreen}CC`
+                    color: getCardTextColor(content)
                   }}>
                     {placeholderContent[content].text.split('\n\n').map((para, idx) => (
                       <span key={idx} style={{ display: 'block', marginBottom: '1em' }}>{para}</span>
@@ -374,9 +388,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                           rel="noopener noreferrer"
                           className="underline"
                           style={{
-                            color: isDarkColor(colorPalette[contentColorMap[content]])
-                              ? `${colorPalette.atmosphericWhite}CC`
-                              : `${colorPalette.pastelGreen}CC`
+                            color: getCardTextColor(content)
                           }}
                         >
                           {contributor.name}
@@ -387,9 +399,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                 </>
               ) : (
                 <p className="leading-relaxed" style={{
-                  color: isDarkColor(colorPalette[contentColorMap[content]])
-                    ? `${colorPalette.atmosphericWhite}CC`
-                    : `${colorPalette.pastelGreen}CC`
+                  color: getCardTextColor(content)
                 }}>
                   {placeholderContent[content].text.split('\n\n').map((para, idx) => (
                     <span key={idx} style={{ display: 'block', marginBottom: '1em' }}>{para}</span>
@@ -401,9 +411,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                   <span
                     className="text-sm"
                     style={{
-                      color: isDarkColor(colorPalette[contentColorMap[content]])
-                        ? `${colorPalette.atmosphericWhite}CC`
-                        : `${colorPalette.pastelGreen}CC`
+                      color: getCardTextColor(content)
                     }}
                   >
                     Created by:
@@ -414,9 +422,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                     rel="noopener noreferrer"
                     className="text-sm underline"
                     style={{
-                      color: isDarkColor(colorPalette[contentColorMap[content]])
-                        ? `${colorPalette.atmosphericWhite}CC`
-                        : `${colorPalette.pastelGreen}CC`
+                      color: getCardTextColor(content)
                     }}
                   >
                     {placeholderContent[content].createdBy.name}
