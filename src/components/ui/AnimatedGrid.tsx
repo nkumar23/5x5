@@ -156,14 +156,15 @@ const contributorsList = [
 ];
 
 // Define color palette
-const colorPalette = {
+export const colorPalette = {
   'perceptualViolet': '#7B5EEA',
   'celestialBlue': '#7CD7FF',
   'infraPink': '#FF69B4',
   'midnightIndigo': '#1A1B4B',
   'horizonPeach': '#FFDAB9',
   'atmosphericWhite': '#FFFFFF',
-  'luminalAmber': '#FFA500'
+  'luminalAmber': '#FFA500',
+  'pastelGreen': '#B6F5C9'
 };
 
 // Define complementary colors for buttons
@@ -174,7 +175,8 @@ const complementaryColors: Record<keyof typeof colorPalette, keyof typeof colorP
   'midnightIndigo': 'celestialBlue',
   'horizonPeach': 'infraPink',
   'atmosphericWhite': 'perceptualViolet',
-  'luminalAmber': 'midnightIndigo'
+  'luminalAmber': 'midnightIndigo',
+  'pastelGreen': 'infraPink',
 };
 
 // Function to determine if a background color is dark
@@ -188,11 +190,11 @@ const isDarkColor = (color: string) => {
 };
 
 // Map content to colors
-const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
+export const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
   'About': 'perceptualViolet',
   'Companies': 'celestialBlue',
   'Residency': 'infraPink',
-  'Grants': 'midnightIndigo',
+  'Grants': 'pastelGreen',
   'Contributors': 'horizonPeach',
   'Quarantine Dreams': 'luminalAmber',
   'Dancing Monkey': 'perceptualViolet',
@@ -601,6 +603,27 @@ export default function AnimatedGrid() {
       if (randomInterval.current) clearInterval(randomInterval.current);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Add event listener for navbar dropdown
+  useEffect(() => {
+    const handler = (e: any) => {
+      const key = e.detail?.key;
+      if (!key) return;
+      // Find the position of the card in the grid
+      for (let row = 0; row < gridContent.length; row++) {
+        for (let col = 0; col < gridContent[row].length; col++) {
+          if (gridContent[row][col] === key) {
+            const dotKey = `${row}-${col}`;
+            setSelectedDot(dotKey);
+            setSelectedContent(key);
+            return;
+          }
+        }
+      }
+    };
+    window.addEventListener('open-grid-card', handler);
+    return () => window.removeEventListener('open-grid-card', handler);
+  }, []);
 
   return (
     <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden relative">
