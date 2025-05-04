@@ -160,7 +160,6 @@ export const colorPalette = {
   'perceptualViolet': '#7B5EEA',
   'celestialBlue': '#7CD7FF',
   'infraPink': '#FF69B4',
-  'midnightIndigo': '#1A1B4B',
   'horizonPeach': '#FFDAB9',
   'atmosphericWhite': '#FFFFFF',
   'luminalAmber': '#FFA500',
@@ -171,11 +170,10 @@ export const colorPalette = {
 const complementaryColors: Record<keyof typeof colorPalette, keyof typeof colorPalette> = {
   'perceptualViolet': 'luminalAmber',
   'celestialBlue': 'perceptualViolet',
-  'infraPink': 'midnightIndigo',
-  'midnightIndigo': 'celestialBlue',
+  'infraPink': 'pastelGreen',
   'horizonPeach': 'infraPink',
   'atmosphericWhite': 'perceptualViolet',
-  'luminalAmber': 'midnightIndigo',
+  'luminalAmber': 'pastelGreen',
   'pastelGreen': 'infraPink',
 };
 
@@ -200,19 +198,19 @@ export const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
   'Dancing Monkey': 'perceptualViolet',
   'Power to the People': 'celestialBlue',
   'Experiments in Reincarnation': 'infraPink',
-  'Made You Think': 'midnightIndigo',
+  'Made You Think': 'pastelGreen',
   'BGM': 'horizonPeach',
   'Awaken': 'luminalAmber',
   'Ikenga Wines': 'perceptualViolet',
   'Kira': 'celestialBlue',
   'Mount Lawrence': 'infraPink',
-  'Fullstack Human': 'midnightIndigo',
+  'Fullstack Human': 'pastelGreen',
   'Black Brick Project': 'horizonPeach',
   'Double Zero': 'luminalAmber',
   'Telepath': 'perceptualViolet',
   'Ship By Friday': 'celestialBlue',
   'Etched': 'infraPink',
-  'Bot or Not': 'midnightIndigo',
+  'Bot or Not': 'pastelGreen',
   'Onwards And Beyond': 'horizonPeach',
   'Original music': 'luminalAmber',
 };
@@ -351,7 +349,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                 style={{ 
                   color: isDarkColor(colorPalette[contentColorMap[content]]) 
                     ? colorPalette.atmosphericWhite 
-                    : colorPalette.midnightIndigo 
+                    : colorPalette.pastelGreen 
                 }}
               >
                 {content}
@@ -361,7 +359,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                   <p className="leading-relaxed" style={{
                     color: isDarkColor(colorPalette[contentColorMap[content]])
                       ? `${colorPalette.atmosphericWhite}CC`
-                      : `${colorPalette.midnightIndigo}CC`
+                      : `${colorPalette.pastelGreen}CC`
                   }}>
                     {placeholderContent[content].text.split('\n\n').map((para, idx) => (
                       <span key={idx} style={{ display: 'block', marginBottom: '1em' }}>{para}</span>
@@ -378,7 +376,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                           style={{
                             color: isDarkColor(colorPalette[contentColorMap[content]])
                               ? `${colorPalette.atmosphericWhite}CC`
-                              : `${colorPalette.midnightIndigo}CC`
+                              : `${colorPalette.pastelGreen}CC`
                           }}
                         >
                           {contributor.name}
@@ -391,7 +389,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                 <p className="leading-relaxed" style={{
                   color: isDarkColor(colorPalette[contentColorMap[content]])
                     ? `${colorPalette.atmosphericWhite}CC`
-                    : `${colorPalette.midnightIndigo}CC`
+                    : `${colorPalette.pastelGreen}CC`
                 }}>
                   {placeholderContent[content].text.split('\n\n').map((para, idx) => (
                     <span key={idx} style={{ display: 'block', marginBottom: '1em' }}>{para}</span>
@@ -405,7 +403,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                     style={{
                       color: isDarkColor(colorPalette[contentColorMap[content]])
                         ? `${colorPalette.atmosphericWhite}CC`
-                        : `${colorPalette.midnightIndigo}CC`
+                        : `${colorPalette.pastelGreen}CC`
                     }}
                   >
                     Created by:
@@ -418,7 +416,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                     style={{
                       color: isDarkColor(colorPalette[contentColorMap[content]])
                         ? `${colorPalette.atmosphericWhite}CC`
-                        : `${colorPalette.midnightIndigo}CC`
+                        : `${colorPalette.pastelGreen}CC`
                     }}
                   >
                     {placeholderContent[content].createdBy.name}
