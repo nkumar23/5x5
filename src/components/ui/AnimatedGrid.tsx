@@ -644,14 +644,21 @@ export default function AnimatedGrid() {
         <div className="w-[min(90vw,90vh)] aspect-square relative" ref={gridRef}>
           {/* Technical annotation */}
           <motion.div 
-            className={`${bricolage.className} absolute bottom-0 left-1/2 -translate-x-1/2 text-[0.65rem] text-white/30 tracking-widest uppercase flex items-center gap-2 pb-2`}
+            className={`${bricolage.className} absolute bottom-0 left-1/2 -translate-x-1/2 text-[0.65rem] text-white/30 tracking-widest uppercase flex items-center gap-2 pb-2 whitespace-nowrap`}
             animate={{
               opacity: selectedContent ? 0 : 1
             }}
             transition={{ duration: 0.3 }}
+            style={{
+              whiteSpace: 'nowrap',
+              width: 'max-content',
+              maxWidth: '90vw',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
-            <span className="font-light">EST</span>
-            <span className="font-medium">5.5.25</span>
+            <span className="font-light">5x5 Collective //</span>
+            <span className="font-medium">est 5.5.25</span>
           </motion.div>
 
           <div 
