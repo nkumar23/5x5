@@ -20,8 +20,8 @@ type ContentKey =
 const gridContent: ContentKey[][] = [
   ['About', 'Companies', 'Residency', 'Grants', 'Contributors'],
   ['Quarantine Dreams', 'Dancing Monkey', 'Power to the People', 'Experiments in Reincarnation', 'Made You Think'],
-  ['BGM', 'Awaken', 'Ikenga Wines', 'Kira', 'Mount Lawrence'],
-  ['Fullstack Human', 'Black Brick Project', 'Double Zero', 'Telepath', 'Bot or Not'],
+  ['BGM', 'Awaken', 'Ikenga Wines', 'Kira', 'Double Zero'],
+  ['Fullstack Human', 'Black Brick Project', 'Mount Lawrence', 'Telepath', 'Bot or Not'],
   ['Ship By Friday', 'Etched', 'Onwards And Beyond', 'Original music', 'Bot or Not'],
 ];
 
