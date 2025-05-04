@@ -25,113 +25,135 @@ const gridContent: ContentKey[][] = [
   ['Ship By Friday', 'Etched', 'Onwards And Beyond', 'Original music', 'Bot or Not'],
 ];
 
-const placeholderContent: Record<ContentKey, { text: string; link: string }> = {
+const placeholderContent: Record<ContentKey, { text: string; link: string; createdBy?: { name: string; url: string } }> = {
   // Row 1 - Navigation
   'About': {
-    text: 'We are a collective of builders, artists, and investors working to shape the future of technology and culture.',
-    link: 'about'
+    text: '5x5 is a collective of artists, engineers, chefs, tinkerers, and adventurers exploring new and ancient technologies to understand the world we inhabit and the futures we can create. Get in touch to find out more.',
+    link: 'mailto:nikhil@5x5.studios'
   },
   'Companies': {
-    text: 'We invest in early-stage companies building the future of technology, art, and culture.',
-    link: 'investments'
+    text: 'We occasionally invest in founders who are taking swings to create the kind of future they want to live in. We are less concerned with finding unicorns and more concerned with finding the kind of weirdness that needs to exist but often has no home. Tell us about your project and why we should be inspired by it.',
+    link: 'mailto:nikhil@5x5.studios'
   },
   'Residency': {
-    text: 'Join our community of creators and innovators in our residency program.',
-    link: 'residencies'
+    text: 'In the Fall of 2025, we will begin piloting a residency program in the Catskills. More info to come soon, but if you cannot wait to hear more, please reach out.',
+    link: 'mailto:nikhil@5x5.studios'
   },
   'Grants': {
-    text: 'We provide grants to support innovative projects at the intersection of technology and art.',
-    link: 'grants'
+    text: 'Alongside out residency program, we will soon begin to offer small grants to artists and citizen scientists to fund cutting edge non-commercial projects. Reach out to find out more.',
+    link: 'mailto:nikhil@5x5.studios'
   },
   'Contributors': {
-    text: 'Learn how you can contribute to our community and mission.',
+    text: 'The current contributors to 5x5 are listed below. If you would like to contribute, please reach out and share a sampling of your work.',
     link: 'contributing'
   },
 
   // Row 2 - Team
   'Quarantine Dreams': {
     text: 'A Pandemic-era fever dream music video with both music and visuals created by Nikhil Kumar using a variety of technologies, instruments, and recording techniques to present a disorienting glimpse into the mundanity of lockdown',
-    link: 'https://www.youtube.com/watch?v=I5AjdG9m8bk'
+    link: 'https://www.youtube.com/watch?v=I5AjdG9m8bk',
+    createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   },
   'Dancing Monkey': {
     text: 'The Dancing Monkey is a new film adapted from Eugene O\'Neill\'s classic groundbreaking play, \'The Hairy Ape.\' Set in the present, the film follows Wayne, a factory worker with an important decision to make. After being compared to a dancing monkey by one of the factory owners, Wayne sets out to find an answer to a question that will decide his fate and those around him.',
-    link: 'https://www.thedancingmonkeyfilm.com/'
+    link: 'https://www.thedancingmonkeyfilm.com/',
+    createdBy: { name: 'Chandler Wild', url: 'https://chandlerwild.com' }
   },
   'Power to the People': {
     text: 'There\'s a systems design term and web-era phrase — graceful degradation — that suddenly feels like an important core ethic for civilization. In Europe and USA, we\'re being presented with two divergent visions of how society navigates technology… Read more.',
-    link: 'https://x.com/hv23/status/1918141243395019036'
+    link: 'https://x.com/hv23/status/1918141243395019036',
+    createdBy: { name: 'Harish Venkatesan', url: 'https://twitter.com/hv23' }
   },
   'Experiments in Reincarnation': {
     text: 'Experiments in Reincarnation is a sculptural exploration of transformation -- of bodies, of attachments, of scale. It began with a fascination: how do we define who we are over time?… See more.',
-    link: 'https://vimeo.com/558070075'
+    link: 'https://vimeo.com/558070075',
+    createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   },
   'Made You Think': {
     text: 'Join Nat, Neil, and Adil as they examine ideas that – as the name suggests – make you think. Episodes will explore books, essays, podcasts, and anything else that warrants further discussion, teaches something useful, or at the very least, exercises our brain muscles.',
-    link: 'https://www.madeyouthinkpodcast.com/'
+    link: 'https://www.madeyouthinkpodcast.com/',
+    createdBy: { name: 'Adil Majid', url: 'https://adilmajid.com' }
   },
 
   // Row 3 - Projects
   'BGM': {
     text: 'The first flour mill to open in Brooklyn since the 1800s, featuring a new American-made stone mill and all locally sourced grains from Northeastern farmers',
-    link: 'https://brooklyngranaryandmill.com/'
+    link: 'https://brooklyngranaryandmill.com/',
   },
   'Awaken': {
     text: 'The best crypto tax software for the Solana ecosystem and beyond',
-    link: 'https://awaken.tax/'
+    link: 'https://awaken.tax/',
   },
   'Ikenga Wines': {
     text: 'The first biodesigned palm wine, made in America without any palm. Ikenga is bringing the varied flavors of Nigerian palm wine to the US using sophisticated fermentation techniques that produce the familiar flavors of palm wine in environmentally sustainable ways… Learn more.',
-    link: 'https://ikengawines.com/'
+    link: 'https://ikengawines.com/',
   },
   'Kira': {
     text: 'Kira is helping real estate agents do more for their customers with the power of AI in their palms.',
-    link: 'https://withkira.com/'
+    link: 'https://withkira.com/',
   },
 
   // Row 4 - Portfolio
   'Mount Lawrence': {
     text: 'Mount Lawrence follows filmmaker Chandler Wild\'s 6,700 mile bicycle ride from New York City to the end of the road in Alaska to reconnect with his adventure loving father, a victim of suicide.',
-    link: 'https://www.amazon.com/Mount-Lawrence-Chandler-Wild/dp/B09RFT4JP9'
+    link: 'https://www.amazon.com/Mount-Lawrence-Chandler-Wild/dp/B09RFT4JP9',
+    createdBy: { name: 'Chandler Wild', url: 'https://chandlerwild.com' }
   },
   'Fullstack Human': {
-    text: 'Advanced AI communication platform for seamless human-machine interaction.',
-    link: 'portfolio/telepath'
+    text: 'Follow Nikhil on his quest to learn how to make everything he likes to consume.',
+    link: 'https://www.instagram.com/fullstack_human/',
+    createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   },
   'Black Brick Project': {
-    text: 'Exploring the boundaries between human and AI-generated content.',
-    link: 'portfolio/bot-or-not'
+    text: 'Art gallery in Brooklyn supporting experimental and emerging artists through residencies, exhibitions, and performance series.',
+    link: 'https://www.blackbrickproject.com/',
   },
   'Double Zero': {
-    text: 'Your AI-powered personal assistant for creative work.',
-    link: 'portfolio/sidekick'
+    text: 'DoubleZero is a global fiber network for high performance distributed systems and blockchains, bringing high-performance networking and hardware acceleration to crypto. It is not a new L1 or L2, it is the first N1 in the world. Base layer network infrastructure for distributed systems.',
+    link: 'https://doublezero.xyz/',
   },
   'Telepath': {
-    text: 'Revolutionary tools for automated transcript editing and enhancement.',
-    link: 'portfolio/transcript-editing'
+    text: 'A better Telegram client for professionals in business development, client enablement, forward deployed engineering, and other similarly client-facing roles.',
+    link: 'Coming soon',
+    createdBy: { name: 'Jon Wong', url: 'https://x.com/jnwng' }
   },
 
   // Row 5 - Recommendations
   'Ship By Friday': {
-    text: 'Curated recommendations for unique dining experiences around the world.',
-    link: 'recommendations/food'
+    text: 'If I was to boil down the most important rule learned over eleven years of shipping software, it would be: velocity above all else.Velocity trumps everything. It trumps prioritization, code quality, design polish, feature completion, and whatever else you consider sacred.Velocity is the cure to the sluggishness that so many software teams fall into. I think of this rule as Ship by Friday.',
+    link: 'https://www.adilmajid.com/post/ship-by-friday',
+    createdBy: { name: 'Adil Majid', url: 'https://adilmajid.com' }
   },
   'Etched': {
-    text: 'Our favorite films that inspire creativity and innovation.',
-    link: 'recommendations/films'
+    text: 'Etched is a proof of concept platform that allows writers to own their works by minting them as NFTs with the essay text written in markdown in the description of the NFT.',
+    link: 'https://etched.id',
+    createdBy: { name: 'Jon Wong', url: 'https://x.com/jnwng' }
   },
   'Bot or Not': {
-    text: 'Essential readings on technology, art, and culture.',
-    link: 'https://botornot.is/'
+    text: 'A mini-game meant to test whether you can tell the difference between a human and an AI.',
+    link: 'https://botornot.is/',
+    createdBy: { name: 'Harish Venkatesan', url: 'https://twitter.com/hv23' }
   },
   'Onwards And Beyond': {
     text: 'Nikhil blogged his backpacking trip in 2012 and sporadically updated it until 2015. Take a trip in the Time Machine here.',
-    link: 'https://onwardsandbeyond-blog.tumblr.com/'
+    link: 'https://onwardsandbeyond-blog.tumblr.com/',
+    createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   },
   'Original music': {
     text: 'Some music made by Nikhil over the years',
-    link: 'https://soundcloud.com/nkumar23'
+    link: 'https://soundcloud.com/nkumar23',
+    createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   }
 };
+
+// Add this array after placeholderContent
+const contributorsList = [
+  { name: 'Chandler Wild', url: 'https://chandlerwild.com' },
+  { name: 'Harish Venkatesan', url: 'https://twitter.com/hv23' },
+  { name: 'Jon Wong', url: 'https://x.com/jnwng' },
+  { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' },
+  { name: 'Adil Majid', url: 'https://adilmajid.com' },
+];
 
 // Define color palette
 const colorPalette = {
@@ -332,13 +354,71 @@ const ContentCard: React.FC<ContentCardProps> = ({
               >
                 {content}
               </h1>
-              <p className="leading-relaxed" style={{ 
-                color: isDarkColor(colorPalette[contentColorMap[content]]) 
-                  ? `${colorPalette.atmosphericWhite}CC` 
-                  : `${colorPalette.midnightIndigo}CC` 
-              }}>
-                {placeholderContent[content].text}
-              </p>
+              {content === 'Contributors' ? (
+                <>
+                  <p className="leading-relaxed" style={{
+                    color: isDarkColor(colorPalette[contentColorMap[content]])
+                      ? `${colorPalette.atmosphericWhite}CC`
+                      : `${colorPalette.midnightIndigo}CC`
+                  }}>
+                    {placeholderContent[content].text}
+                  </p>
+                  <ul className="mt-4 space-y-1">
+                    {contributorsList.map((contributor) => (
+                      <li key={contributor.url}>
+                        <a
+                          href={contributor.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                          style={{
+                            color: isDarkColor(colorPalette[contentColorMap[content]])
+                              ? `${colorPalette.atmosphericWhite}CC`
+                              : `${colorPalette.midnightIndigo}CC`
+                          }}
+                        >
+                          {contributor.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="leading-relaxed" style={{
+                  color: isDarkColor(colorPalette[contentColorMap[content]])
+                    ? `${colorPalette.atmosphericWhite}CC`
+                    : `${colorPalette.midnightIndigo}CC`
+                }}>
+                  {placeholderContent[content].text}
+                </p>
+              )}
+              {placeholderContent[content].createdBy && (
+                <div className="mb-2">
+                  <span
+                    className="text-sm"
+                    style={{
+                      color: isDarkColor(colorPalette[contentColorMap[content]])
+                        ? `${colorPalette.atmosphericWhite}CC`
+                        : `${colorPalette.midnightIndigo}CC`
+                    }}
+                  >
+                    Created by:
+                  </span>{' '}
+                  <a
+                    href={placeholderContent[content].createdBy.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm underline"
+                    style={{
+                      color: isDarkColor(colorPalette[contentColorMap[content]])
+                        ? `${colorPalette.atmosphericWhite}CC`
+                        : `${colorPalette.midnightIndigo}CC`
+                    }}
+                  >
+                    {placeholderContent[content].createdBy.name}
+                  </a>
+                </div>
+              )}
               <Link 
                 href={placeholderContent[content].link}
                 className="inline-block px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
@@ -347,7 +427,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
                   color: colorPalette.atmosphericWhite
                 }}
               >
-                Learn more →
+                {['About', 'Companies', 'Residency', 'Grants', 'Contributors'].includes(content) ? 'Get In Touch' : 'Learn more →'}
               </Link>
             </div>
           </div>
