@@ -28,7 +28,7 @@ const gridContent: ContentKey[][] = [
 const placeholderContent: Record<ContentKey, { text: string; link: string; createdBy?: { name: string; url: string } }> = {
   // Row 1 - Navigation
   'About': {
-    text: '5x5 is a collective of artists, engineers, chefs, tinkerers, and adventurers exploring new and ancient technologies to understand the world we inhabit and the futures we can create. Get in touch to find out more.',
+    text: '5x5 is a collective of artists, engineers, chefs, tinkerers, and adventurers exploring new and ancient technologies to understand the world we inhabit and the futures we can create.\n\nThe term 5x5 is a reference to the rarest major basketball statline, in which a player must get 5 counting stats in the 5 major categories in the game: points, rebounds, assists, steals, and blocks. Like the 14 NBA players who have ever accomplished this, the 5x5 collective aims to find skilled generalists who can impact the game in every dimension. Get in touch to find out more.',
     link: 'mailto:nikhil@5x5.studios'
   },
   'Companies': {
@@ -363,7 +363,9 @@ const ContentCard: React.FC<ContentCardProps> = ({
                       ? `${colorPalette.atmosphericWhite}CC`
                       : `${colorPalette.midnightIndigo}CC`
                   }}>
-                    {placeholderContent[content].text}
+                    {placeholderContent[content].text.split('\n\n').map((para, idx) => (
+                      <span key={idx} style={{ display: 'block', marginBottom: '1em' }}>{para}</span>
+                    ))}
                   </p>
                   <ul className="mt-4 space-y-1">
                     {contributorsList.map((contributor) => (
@@ -391,7 +393,9 @@ const ContentCard: React.FC<ContentCardProps> = ({
                     ? `${colorPalette.atmosphericWhite}CC`
                     : `${colorPalette.midnightIndigo}CC`
                 }}>
-                  {placeholderContent[content].text}
+                  {placeholderContent[content].text.split('\n\n').map((para, idx) => (
+                    <span key={idx} style={{ display: 'block', marginBottom: '1em' }}>{para}</span>
+                  ))}
                 </p>
               )}
               {placeholderContent[content].createdBy && (
