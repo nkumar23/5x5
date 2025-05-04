@@ -36,7 +36,7 @@ const placeholderContent: Record<ContentKey, { text: string; link: string; creat
     link: 'mailto:nikhil@5x5.studios'
   },
   'Residency': {
-    text: 'In the Fall of 2025, we will begin piloting a residency program in the Catskills. More info to come soon, but if you cannot wait to hear more, please reach out.',
+    text: 'In the Fall of 2025, we will begin piloting an art and science residency program in the Catskills. More info to come soon, but if you cannot wait to hear more, please reach out.',
     link: 'mailto:nikhil@5x5.studios'
   },
   'Grants': {
