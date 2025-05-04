@@ -140,7 +140,7 @@ const placeholderContent: Record<ContentKey, { text: string; link: string; creat
     createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   },
   'Original music': {
-    text: 'Some music made by Nikhil over the years',
+    text: 'Some music made by Nikhil over the years, usually using Logic or Ableton, often using analog sounds. His live performances are very different from this.',
     link: 'https://soundcloud.com/nkumar23',
     createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
   }
