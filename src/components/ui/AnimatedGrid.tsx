@@ -15,14 +15,14 @@ type ContentKey =
   | 'Quarantine Dreams' | 'Dancing Monkey' | 'Power to the People' | 'Experiments in Reincarnation' | 'Made You Think'
   | 'BGM' | 'Awaken' | 'Ikenga Wines' | 'Kira' | 'Mount Lawrence'
   | 'Fullstack Human' | 'Black Brick Project' | 'Double Zero' | 'Telepath'
-  | 'Ship By Friday' | 'Etched' | 'Bot or Not' | 'Onwards And Beyond' | 'Original music';
+  | 'Ship By Friday' | 'Etched' | 'Bot or Not' | 'Onwards And Beyond' | 'Original music' | 'Two Take Flight';
 
 const gridContent: ContentKey[][] = [
   ['About', 'Companies', 'Residency', 'Grants', 'Contributors'],
   ['Quarantine Dreams', 'Dancing Monkey', 'Power to the People', 'Experiments in Reincarnation', 'Made You Think'],
   ['BGM', 'Awaken', 'Ikenga Wines', 'Kira', 'Double Zero'],
   ['Fullstack Human', 'Black Brick Project', 'Mount Lawrence', 'Telepath', 'Bot or Not'],
-  ['Ship By Friday', 'Etched', 'Onwards And Beyond', 'Original music', 'Bot or Not'],
+  ['Ship By Friday', 'Etched', 'Onwards And Beyond', 'Original music', 'Two Take Flight'],
 ];
 
 const placeholderContent: Record<ContentKey, { text: string; link: string; createdBy?: { name: string; url: string } }> = {
@@ -143,7 +143,11 @@ const placeholderContent: Record<ContentKey, { text: string; link: string; creat
     text: 'Some music made by Nikhil over the years, usually using Logic or Ableton, often using analog sounds. His live performances are very different from this.',
     link: 'https://soundcloud.com/nkumar23',
     createdBy: { name: 'Nikhil Kumar', url: 'https://nikhilkumar.media' }
-  }
+  },
+  'Two Take Flight': {
+    text: 'Two Take Flight is a travel blog documenting the journey of Neal Modi and Anushka Chayya as they traveled around the world for a year',
+    link: 'https://www.twotakeflight.com/',
+  },
 };
 
 // Add this array after placeholderContent
@@ -215,6 +219,7 @@ export const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
   'Bot or Not': 'pastelGreen',
   'Onwards And Beyond': 'horizonPeach',
   'Original music': 'luminalAmber',
+  'Two Take Flight': 'celestialBlue',
 };
 
 // Dot Component
@@ -308,14 +313,12 @@ interface ContentCardProps {
   content: ContentKey;
   isExpanded: boolean;
   onClose: () => void;
-  onDragEnd: (e: any, info: any) => void;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({
   content,
   isExpanded,
   onClose,
-  onDragEnd,
 }) => {
   const getCardBackgroundColor = (content: ContentKey) => {
     if (["Made You Think", "Fullstack Human", "Bot or Not"].includes(content)) {
@@ -345,9 +348,15 @@ const ContentCard: React.FC<ContentCardProps> = ({
       transition={{ type: "spring", damping: 20 }}
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.2}
-      onDragEnd={onDragEnd}
-      onMouseDown={(e) => e.stopPropagation()}
+      dragElastic={0.5}
+      onDragEnd={(e, info) => {
+        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+          console.log('Drag offset y:', info.offset.y);
+          if (info.offset.y > 60) {
+            onClose();
+          }
+        }
+      }}
     >
       <div
         className="w-full h-full rounded-t-3xl lg:rounded-2xl overflow-hidden bg-opacity-100"
@@ -745,13 +754,6 @@ export default function AnimatedGrid() {
                   setSelectedContent(null);
                   setIsContentExpanded(false);
                   resetInactivityTimer();
-                }}
-                onDragEnd={(e, info) => {
-                  if (info.offset.y < -20) {
-                    setIsContentExpanded(true);
-                  } else if (info.offset.y > 20) {
-                    setIsContentExpanded(false);
-                  }
                 }}
               />
             </div>
