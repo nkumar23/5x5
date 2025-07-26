@@ -550,6 +550,19 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
 // Main Grid Component
 export default function AnimatedGrid() {
+  // --- Event Hero Animation State ---
+  const [showEventHero, setShowEventHero] = useState(false);
+  const [heroDismissed, setHeroDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!heroDismissed) {
+      const timer = setTimeout(() => {
+        setShowEventHero(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [heroDismissed]);
+
   const [hoveredDot, setHoveredDot] = useState<string | null>(null);
   const [rippleDot, setRippleDot] = useState<string | null>(null);
   const [selectedDot, setSelectedDot] = useState<string | null>(null);
@@ -751,6 +764,68 @@ export default function AnimatedGrid() {
       />
 
       {/* Grid Container */}
+      {/* Expanding Event Hero (in flow) */}
+      <motion.div
+        initial={{ height: 0 }}
+        animate={
+          showEventHero
+            ? heroDismissed
+              ? { height: "10vh" }
+              : { height: "70vh" }
+            : { height: 0 }
+        }
+        transition={
+          showEventHero
+            ? heroDismissed
+              ? { duration: 0.9, ease: "easeInOut" }
+              : { delay: 1.5, duration: 0.9, ease: "easeInOut" }
+            : { duration: 0 }
+        }
+        className="w-full flex items-center justify-center overflow-hidden bg-gradient-to-b from-black/80 to-neutral-900/70"
+        style={{ pointerEvents: showEventHero ? "auto" : "none" }}
+      >
+        {showEventHero && !heroDismissed && (
+          <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="relative max-w-lg w-full mx-4 bg-white/90 dark:bg-black/90 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 p-8 flex flex-col items-center text-center animate-pop-in">
+
+
+              <h2
+                className="text-3xl md:text-4xl font-bold tracking-tight mb-2"
+                style={{ fontFamily: bricolage.style.fontFamily }}
+              >
+                ancient://technology
+              </h2>
+              <p className="text-lg md:text-xl mb-6 text-neutral-700 dark:text-neutral-200">
+                join us in NYC at My Pet Ram from August x to August y for an
+                exploration and exhibition on how the past informs the future
+              </p>
+              <button
+                className="mt-2 px-6 py-2 rounded-full bg-black text-white dark:bg-white dark:text-black font-semibold shadow hover:bg-neutral-800 hover:text-white transition pointer-events-auto"
+                onClick={() => setHeroDismissed(true)}
+                aria-label="Dismiss event announcement"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+        {showEventHero && heroDismissed && (
+          <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="max-w-md w-full mx-4 bg-white/70 dark:bg-black/70 rounded-xl shadow border border-neutral-200 dark:border-neutral-800 p-1 flex flex-col items-center text-center">
+              <a
+                href="https://instagram.com/5x5_collective"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs md:text-sm font-semibold tracking-tight underline hover:text-blue-600 transition"
+                style={{ fontFamily: bricolage.style.fontFamily }}
+              >
+                ancient://technology: My Pet Ram in NYC from August 7th to 12th
+              </a>
+            </div>
+          </div>
+        )}
+      </motion.div>
+
       <div className="w-full h-[50dvh] lg:min-h-[100dvh] relative flex items-center justify-center">
         <div
           className="w-[min(90vw,90vh)] aspect-square relative"
