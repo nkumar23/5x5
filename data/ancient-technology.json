@@ -1,0 +1,104 @@
+[
+  {
+    "artistName": "Nikhil Kumar",
+    "slug": "events-ancient-technology-nikhil-kumar",
+    "workName": "Quarantine Dreams",
+    "bio": "Nikhil Kumar is a multidisciplinary artist and technologist exploring the intersection of ancient craft and digital futures. His work spans music, video, and interactive installations.",
+    "images": [
+      "/images/ancient-technology/nikhil-kumar-1.jpg",
+      "/images/ancient-technology/nikhil-kumar-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Chandler Wild",
+    "slug": "events-ancient-technology-chandler-wild",
+    "workName": "Dancing Monkey",
+    "bio": "Chandler Wild is a filmmaker and creative technologist whose projects blend narrative storytelling with experimental media.",
+    "images": [
+      "/images/ancient-technology/chandler-wild-1.jpg",
+      "/images/ancient-technology/chandler-wild-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Adil Majid",
+    "slug": "events-ancient-technology-adil-majid",
+    "workName": "Made You Think",
+    "bio": "Adil Majid is a podcaster and writer focused on philosophy, technology, and the evolution of human thought.",
+    "images": [
+      "/images/ancient-technology/adil-majid-1.jpg",
+      "/images/ancient-technology/adil-majid-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Jon Wong",
+    "slug": "events-ancient-technology-jon-wong",
+    "workName": "Fullstack Human",
+    "bio": "Jon Wong is an engineer and artist working at the intersection of software, hardware, and human experience.",
+    "images": [
+      "/images/ancient-technology/jon-wong-1.jpg",
+      "/images/ancient-technology/jon-wong-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Kira Smith",
+    "slug": "events-ancient-technology-kira-smith",
+    "workName": "Kira",
+    "bio": "Kira Smith is a visual artist whose work draws on themes of memory, nature, and the persistence of the handmade.",
+    "images": [
+      "/images/ancient-technology/kira-smith-1.jpg",
+      "/images/ancient-technology/kira-smith-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Lance Weiler",
+    "slug": "events-ancient-technology-lance-weiler",
+    "workName": "Telepath",
+    "bio": "Lance Weiler is a storyteller and experience designer pushing the boundaries of participatory media.",
+    "images": [
+      "/images/ancient-technology/lance-weiler-1.jpg",
+      "/images/ancient-technology/lance-weiler-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Chloe Kim",
+    "slug": "events-ancient-technology-chloe-kim",
+    "workName": "Experiments in Reincarnation",
+    "bio": "Chloe Kim is a multimedia artist exploring cycles of life, death, and technology through immersive installations.",
+    "images": [
+      "/images/ancient-technology/chloe-kim-1.jpg",
+      "/images/ancient-technology/chloe-kim-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Sasha Lee",
+    "slug": "events-ancient-technology-sasha-lee",
+    "workName": "Bot or Not",
+    "bio": "Sasha Lee is a creative coder and AI researcher making playful, provocative works at the edge of machine intelligence.",
+    "images": [
+      "/images/ancient-technology/sasha-lee-1.jpg",
+      "/images/ancient-technology/sasha-lee-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Alex Rivera",
+    "slug": "events-ancient-technology-alex-rivera",
+    "workName": "Onwards And Beyond",
+    "bio": "Alex Rivera is a digital artist and animator whose work investigates the future of identity and virtual worlds.",
+    "images": [
+      "/images/ancient-technology/alex-rivera-1.jpg",
+      "/images/ancient-technology/alex-rivera-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Priya Desai",
+    "slug": "events-ancient-technology-priya-desai",
+    "workName": "Double Zero",
+    "bio": "Priya Desai is a sculptor and designer whose projects combine ancient materials with new fabrication techniques.",
+    "images": [
+      "/images/ancient-technology/priya-desai-1.jpg",
+      "/images/ancient-technology/priya-desai-2.jpg"
+    ]
+  }
+]
+
+
