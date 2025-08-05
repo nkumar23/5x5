@@ -1,0 +1,142 @@
+[
+  {
+    "artistName": "Sally Kong",
+    "slug": "events-ancient-technology-sally-kong",
+    "workName": "Mitos",
+    "bio": "Sally Kong (she/her) is a software engineer, artist, and hobby biologist based in Brooklyn, NY. She has built artist tools and 3D production pipelines for feature animation and games at Blue Sky Studios, Netflix, and Rockstar Games. Her creative practice revolves around fusing technology with traditional crafts to translate the poetry in living systems into familiar forms.",
+    "projectDescription": "At the core of the project is the significance of the mitochondrial DNA. The mitochondria, unlike other cellular organelles, have their own DNA and are inherited exclusively from the egg cell. I was fascinated by the knowledge that all of our mitochondria hence comes from our mothers, and how this makes the mtDNA a vital tool in studying matrilineal ancestry and the history of human migration. I wanted to use a technique that's almost as old as my haplogroup M8's mutation and after learning that the root word of mitochondria is \"Mitos\" which means \"thread\" in Greek, weaving felt like a natural medium to manifest my personal ancestral data.",
+    "price": "On request",
+    "website": "sallykong.com",
+    "instagram": "sally.jh.kong",
+    "images": [
+      "/images/ancient-technology/sally-kong-1.jpg",
+      "/images/ancient-technology/sally-kong-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Nikhil Kumar",
+    "slug": "events-ancient-technology-nikhil-kumar",
+    "workName": "Made by Humans",
+    "bio": "Nikhil Kumar is a multimedia artist primarily focused on sound and biomaterials. He's fascinated by non-human scale and uses his art to explore subjects from unconventional perspectives. He is the co-founder of 5x5 Collective and likes learning how to make the things he consumes.",
+    "projectDescription": "This sculpture began as a phrase, \"Made by humans,\" as the first line in a three part poem imagining a conversation with humans 500 years in the future. Using custom-built software, I translated that text into DNA encoding, then used AI tools to predict its resulting protein structure. Finally, I worked with Diego Anaya of Black Brick Project to sculpt metal by hand into that protein form. Steel has been a medium for transferring human knowledge for millennia. DNA, perhaps the oldest technology to convey complex information in simple code, may give us the best chance of communicating with the future while being understood. In the distant future, when humanity itself may be a memory, this piece functions as a time capsule written in the language of life",
+    "price": "5000",
+    "website": "https://nikhilkumar.media",
+    "instagram": "fullstack_human",
+    "images": [
+      "/images/ancient-technology/nikhil-kumar-1.jpg",
+      "/images/ancient-technology/nikhil-kumar-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Romilly Rinck",
+    "slug": "events-ancient-technology-romilly-rinck",
+    "workName": "Limuli",
+    "bio": "Romilly Rinck is a British visual artist, material researcher, and educator based in New York, NY. Mainly working in sculpture and installation, she explores embodied materialities through traditional textile techniques and experimental material processes. Romilly received her MFA in Textiles from Parsons School of Design (2023) and her BA in History of Art and Material Studies from University College London (2015). Working at the intersection of textiles, ecology, and heritage crafts, my process is led by material and site-based research. As an animist, I listen to stories of places and materials. Exploring healthier alternatives to petrochemical-based materials, such as root systems and bacterial cellulose, I move beyond binary distinctions between organic and inorganic, towards an ethics and agency of materials, their life cycles, and their human and nonhuman stories. Taking a decentered approach as a curator of material processes, I set up experiments where different agents interact. I see my pieces as characters in a mythology of materials. The outcomes are syncretic vessels for speculative myths and alternative cosmologies, offering fresh and remembered ways of understanding the entangled relationships between humans, the land, and the unknown.",
+    "projectDescription": "Limuli embodies an ancient animist technology rooted in a reciprocal relationship with land. In pre-christian Britain, these spirals, known as 'corn dollies', were traditionally woven with the last sheaves of grain from the harvest to provide shelter to the \"grain spirit\" over winter. Hung in doorways and houses, they were believed to offer protection and luck. They were returned to the field in Spring to begin the next cycle. Here the structure is woven in aluminium and coated in a skin of bacterial cellulose. Inside nestle three Atlantic horseshoe crabs. This piece is part of a body of work exploring speculative myths and alternative cosmologies, offering fresh and remembered ways of understanding the entangled relationships between humans, the land, and the unknown.",
+    "price": "2200",
+    "website": "",
+    "instagram": "rfflowerr",
+    "images": [
+      "/images/ancient-technology/romilly-rinck-1.jpg",
+      "/images/ancient-technology/romilly-rinck-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Lance Weiler",
+    "slug": "events-ancient-technology-lance-weiler",
+    "workName": "Error Becomes Form",
+    "bio": "Lance Weiler (aka culturehacker) is a storyteller, emerging media artist, entrepreneur, and thought leader working in film, theatre, games, and code. An alumnus of the Sundance Screenwriters Lab, Lance is recognized as a pioneer because of the way he mixes storytelling and technology. For over 20 years he's been innovating at the forefront of entertainment – leading the industry into the digital age. He's a Professor of Professional Practice at Columbia University where he also founded the school's Digital Storytelling Lab.",
+    "projectDescription": "In 17th-century Japan, Sashiko emerged as a method of visible mending, a way to prolong the life of cloth through patterned stitches. Each thread was a gesture of survival, repetition, and care. These works extend that logic into the digital realm. Starting with a glitch, a rupture in the smooth surface of code, I printed the error onto fabric, sewing it into a wearable object. Then, I photographed the shirt and glitched it again. The result is a layered act of digital and material repair, a recursive performance of breakage and reassembly. Like Sashiko, these glitches don't hide the wound. They illuminate it. They ask: what happens when we tend to the error instead of erasing it? What ancient methods might we apply to broken systems of the future?",
+    "price": "On request",
+    "website": "https://lanceweiler.com/",
+    "instagram": "lanceweiler",
+    "images": [
+      "/images/ancient-technology/lance-weiler-1.jpg",
+      "/images/ancient-technology/lance-weiler-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Chandler Wild",
+    "slug": "events-ancient-technology-chandler-wild",
+    "workName": "426",
+    "bio": "Chandler Wild is a director, writer, editor, and producer based in New York City whose work ranges from scripted fiction, feature documentaries, and branded content. His scripts have placed in the Austin Film Festival and he's a 2024 Stowe Storylabs Producing Fellow. His feature documentary, \"Mount Lawrence\" tracked his 6,708 mile journey by bicycle to Alaska and played in festivals throughout the country. His debut feature The Dancing Monkey was released in the summer of 2024 after a festival run. He is the co-founder of All The Way Around Productions.",
+    "projectDescription": "I can only describe my childhood home now. The house was sold more than a decade ago and torn down. Without photos, the best I can hope for is that people get a proper approximation from my fuzzy, unreliable memories. These questionable recollections have a timeline—eventually everyone who knew the place will be gone and the home will truly cease to exist. Describing a place to a human has similarity to describing it to a machine. Both use references to visualize an image. 426 is a video that, like a memory, only exists in a single place. Created with generative AI, the final product was printed to Hi-8 tape. All other digital remnants have been destroyed. Eventually the tape will wear out, just like my mind, and these imperfect memories will be lost forever.",
+    "price": "On request",
+    "website": "https://www.chandlerwild.com/",
+    "instagram": "chanwild",
+    "images": [
+      "/images/ancient-technology/chandler-wild-1.jpg",
+      "/images/ancient-technology/chandler-wild-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Sean Arguelles",
+    "slug": "events-ancient-technology-sean-arguelles",
+    "workName": "The Rules of Plating",
+    "bio": "Sean Arguelles is a culinary artist exploring the intersection of food, technology, and cultural heritage through innovative plating techniques and gastronomic experiences.",
+    "projectDescription": "The Rules of Plating examines the ancient art of food presentation as a form of communication and cultural expression, bridging traditional culinary practices with contemporary artistic interpretation.",
+    "price": "On request",
+    "website": "www.dobonyc.com",
+    "instagram": "cooked.overeasy",
+    "images": [
+      "/images/ancient-technology/sean-arguelles-1.jpg",
+      "/images/ancient-technology/sean-arguelles-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Kirsten Batten Leach",
+    "slug": "events-ancient-technology-kirsten-batten-leach",
+    "workName": "Arlo's Leaves, Untitled",
+    "bio": "Kirsten Batten-Leach is an interdisciplinary artist who makes ephemeral sculptures, video and 2D works about care-taking and bodily autonomy. Her background as a ballet dancer and domestic worker informs the physical rigor of her object-making practice. Often drawing from these two polarized forms of labor, she critiques the effects of social stratification in the United States. In particular, examining power imbalances that occur as she navigates in a femme-presenting body and the subsequent impulses to conceal, collapse in on or control herself. She has exhibited works at NYU Gallatin Galleries, The Factory and Black Brick Project. This year, she is a recipient of the 2025-2026 A.I.R Fellowship and was a finalist for the 2025 Socrates Fellowship. Raised in Boston, she completed her MFA in Integrated Practices at Pratt Institute and earned a BFA in English Literature from Mount Holyoke College.",
+    "projectDescription": "Technology holds an undercurrent of newness, something that hasn't been done before. While I can often be seduced by a narrative of progress, I want to remember that invention is a cycle, the endpoint of a test that occurred over and over again. If the finished product is what we see as technology, how do we keep a record of the first iterations of an idea and how does process become a part of the storyline? These two works encompass the residue of the ancient. I choose metal as my machine. In Untitled, you see a painting made of rust debris on canvas, two improbable materials resist each other, they are the archive of the making. Arlo's Leaves refers to the life cycles of trees. Autumn shedding lays out traces of a different point in the life cycle.",
+    "price": "5000",
+    "website": "https://kirstenbattenleach.com/",
+    "instagram": "_______kirsten",
+    "images": [
+      "/images/ancient-technology/kirsten-batten-leach-1.jpg",
+      "/images/ancient-technology/kirsten-batten-leach-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Matthew Bentley",
+    "slug": "events-ancient-technology-matthew-bentley",
+    "workName": "GROUND ZERO pH",
+    "bio": "Maachew Bentley, also known as 063N13 (GENIE), is a multifaceted creative based in New York, known for his expertise in music curation, photography, and event programming. His work seamlessly blends elements of photographic curation and music production, creating a unique artistic expression that transcends the boundaries of traditional media.",
+    "projectDescription": "Following so called Emancipation, watermelons were widely cultivated by African Americans as a means of economic independence. Seeds were exchanged in local trade, emphasizing their value beyond consumption. Watermelon offered newly freed African Americans a source of income, traded or saved for future planting, holding both practical and economic value. Over time, the fruit became the target of racist caricature, used in popular culture to degrade Black autonomy. Imagery of watermelon being eaten hand to mouth created a perception of messiness, gluttony, and public nuisance further undermining the fruit's role in Black survival and enterprise. This work revisits the watermelon's historical role and reframes it as a symbol of resilience and resourcefulness. The sword marks the possibility of a great reclamation. The stone is just 92% water.",
+    "price": "8000",
+    "website": "https://063n13.bandcamp.com/",
+    "instagram": "maachewbentley",
+    "images": [
+      "/images/ancient-technology/matthew-bentley-1.jpg",
+      "/images/ancient-technology/matthew-bentley-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Artist Nine",
+    "slug": "events-ancient-technology-artist-nine",
+    "workName": "Placeholder Work Nine",
+    "bio": "Artist Nine is a contemporary artist working at the intersection of traditional craft and emerging technologies. Their practice explores themes of cultural memory and technological evolution.",
+    "projectDescription": "This work examines the relationship between ancient practices and contemporary innovation, creating a dialogue between past and future methodologies.",
+    "price": "TBD",
+    "website": "",
+    "instagram": "",
+    "images": [
+      "/images/ancient-technology/artist-nine-1.jpg",
+      "/images/ancient-technology/artist-nine-2.jpg"
+    ]
+  },
+  {
+    "artistName": "Artist Ten",
+    "slug": "events-ancient-technology-artist-ten",
+    "workName": "Placeholder Work Ten",
+    "bio": "Artist Ten is a multidisciplinary creator whose work spans digital and physical mediums, investigating the continuity of human expression across technological paradigms.",
+    "projectDescription": "This piece explores the persistence of ancient wisdom in contemporary practice, bridging temporal divides through material and conceptual innovation.",
+    "price": "TBD",
+    "website": "",
+    "instagram": "",
+    "images": [
+      "/images/ancient-technology/artist-ten-1.jpg",
+      "/images/ancient-technology/artist-ten-2.jpg"
+    ]
+  }
+]
