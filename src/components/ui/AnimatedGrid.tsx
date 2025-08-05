@@ -2,11 +2,13 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Bricolage_Grotesque } from "next/font/google";
+import { Bricolage_Grotesque, Content } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import GalleryContentCard from "./GalleryContentCard";
 import { useRouter, usePathname } from "next/navigation";
+// Import ancient technology data
+const ancientTechData = require("../../../data/ancient-technology.json");
 
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"] });
 
@@ -565,6 +567,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
 // Main Grid Component
 import ancientTechnology from "../../../data/ancient-technology.json";
+import { div } from "framer-motion/client";
 interface AnimatedGridProps {
   /**
    * slug: For top two rows (artists), pass the artist slug (e.g. 'nikhil-kumar'). Null for no highlight or non-artist dots.
@@ -573,24 +576,39 @@ interface AnimatedGridProps {
 }
 
 export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
+  // Split grid logic
+  // Top: 2 rows from ancient-technology.json (5x2)
+  const artistRows = [
+    ancientTechnology.slice(0, 5),
+    ancientTechnology.slice(5, 10),
+  ];
+  // Middle: next 3 rows from gridContent (rows 0-2)
+  const mainRows = gridContent.slice(0, 3);
+  // Overflow/beneath-the-fold: last 2 rows from gridContent
+  const overflowRows = gridContent.slice(3, 5);
+
   const router = useRouter();
   const [hoveredDot, setHoveredDot] = useState<string | null>(null);
   const [rippleDot, setRippleDot] = useState<string | null>(null);
   // Initialize selectedDot and selectedContent based on slug (for top two rows/artists)
   // If slug is provided, use it as the selected dot (assuming slug === dot key, e.g. '0-2'). Otherwise, default to null.
-  const [selectedDot, setSelectedDot] = useState<string | null>(() => slug || null);
+  const [selectedDot, setSelectedDot] = useState<string | null>(
+    () => slug || null
+  );
   // For selectedContent, if slug matches an artist, use artist data; otherwise, use default logic (null).
-  const [selectedContent, setSelectedContent] = useState<ContentKey | null>(() => {
-    if (!slug) return null;
-    // Try to find matching artist in ancientTechnology by slug
-    const artistIndex = (ancientTechnology as any[]).findIndex((a) => a.slug === slug);
-    if (artistIndex !== -1) {
-      const row = Math.floor(artistIndex / 5);
-      const col = artistIndex % 5;
-      return gridContent[row][col];
+  const [selectedContent, setSelectedContent] = useState<ContentKey | null>(
+    () => {
+      if (!slug) return null;
+      // Try to find matching artist in ancientTechnology by slug
+      const artistData = (ancientTechData as any[]).find(
+        (a) => a.slug === `events-ancient-technology-${slug}`
+      );
+      if (artistData) {
+        return slug as ContentKey;
+      }
+      return null;
     }
-    return null;
-  });
+  );
   const [randomDot, setRandomDot] = useState<string | null>(null);
   const [isContentExpanded, setIsContentExpanded] = useState(false);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
@@ -710,6 +728,7 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
       setSelectedDot(null);
       setSelectedContent(null);
       setIsContentExpanded(false);
+      router.push("/");
       resetInactivityTimer();
     }
   };
@@ -736,6 +755,39 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
     // Animate to selected state using the clicked dot position
     setSelectedDot(dotKey);
     setSelectedContent(content as ContentKey);
+  };
+
+  // Handle artist dot click with routing
+  const handleArtistDotClick = (dotKey: string, artist: any) => {
+    // Clear any ongoing animation
+    if (rippleInterval.current) {
+      clearInterval(rippleInterval.current);
+      rippleInterval.current = null;
+    }
+    if (randomInterval.current) {
+      clearInterval(randomInterval.current);
+      randomInterval.current = null;
+    }
+    if (inactivityTimer.current) {
+      clearTimeout(inactivityTimer.current);
+      inactivityTimer.current = null;
+    }
+    setRippleDot(null);
+    setRandomDot(null);
+    isAnimating.current = false;
+
+    // Create URL-friendly artist name from artistName
+    const artistSlug = artist.artistName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    // Push to the artist-specific URL
+    router.push(`/events/ancient-technology/${artistSlug}`);
+
+    // Also set local state for immediate UI feedback
+    setSelectedDot(dotKey);
+    setSelectedContent(artistSlug as ContentKey);
   };
 
   // Start inactivity timer on mount
@@ -786,41 +838,51 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
       />
 
       {/* Grid Container */}
-      <div className="w-full h-[50dvh] lg:min-h-[100dvh] relative flex items-center justify-center">
-        <div
-          className="w-[min(90vw,90vh)] aspect-square relative"
-          ref={gridRef}
-        >
-          {/* Technical annotation */}
-          <motion.div
-            className={`${bricolage.className} absolute bottom-0 left-1/2 -translate-x-1/2 text-[0.65rem] text-white/30 tracking-widest uppercase flex items-center gap-2 pb-2 whitespace-nowrap`}
-            animate={{
-              opacity: selectedContent ? 0 : 1,
-            }}
-            transition={{ duration: 0.3 }}
-            style={{
-              whiteSpace: "nowrap",
-              width: "max-content",
-              maxWidth: "90vw",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            <span className="font-light">5x5 Collective //</span>
-            <span className="font-medium">est 5.5.25</span>
-          </motion.div>
-
-          <div
-            className="grid h-full relative"
-            style={{
-              gridTemplateColumns: "repeat(5, 1fr)",
-              gap: "clamp(0.25rem, 2vmin, 2rem)",
-              padding: "clamp(0.25rem, 2vmin, 2rem)",
-            }}
-          >
-            {gridContent.map((row, rowIndex) =>
+      <div className="w-full flex-1 min-h-[60dvh] relative flex flex-col items-center justify-center p-8">
+        <div className="w-[min(90vw,90vh)] relative" ref={gridRef}>
+          {/* Top grid: 2 rows from ancient-technology.json */}
+          <div className="border-2 border-dashed border-gray-400 p-4 mb-8 rounded-lg">
+            <div className="text-sm text-gray-600 mb-3 font-mono text-center -mt-6 bg-black">
+              ancient://technology — My Pet Ram, NYC 8/5-8/27
+            </div>
+            <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none">
+              {artistRows.map((row, rowIndex) =>
+                row.map((artist, colIndex) => {
+                  const dotKey = artist.slug;
+                  const isSelected = selectedDot === dotKey;
+                  return (
+                    <Dot
+                      key={dotKey}
+                      content={artist.artistName}
+                      position={dotKey}
+                      isHovered={hoveredDot === dotKey}
+                      isRippling={rippleDot === dotKey}
+                      isRandomlySelected={randomDot === dotKey}
+                      isSelected={isSelected}
+                      isClickedDot={isSelected}
+                      shouldHide={false}
+                      onMouseEnter={() => setHoveredDot(dotKey)}
+                      onMouseLeave={() => setHoveredDot(null)}
+                      onClick={() =>
+                        !selectedDot && handleArtistDotClick(dotKey, artist)
+                      }
+                      selectedPosition={
+                        selectedDot === dotKey
+                          ? { row: rowIndex, col: colIndex }
+                          : undefined
+                      }
+                      currentPosition={{ row: rowIndex, col: colIndex }}
+                    />
+                  );
+                })
+              )}
+            </div>
+          </div>
+          {/* Middle grid: next 3 rows from gridContent */}
+          <div className="grid grid-rows-3 grid-cols-5 gap-2 aspect-[5/3] select-none">
+            {mainRows.map((row, rowIndex) =>
               row.map((content, colIndex) => {
-                const dotKey = `${rowIndex}-${colIndex}`;
+                const dotKey = `${rowIndex + 2}-${colIndex}`;
                 const isRippling = rippleDot === dotKey;
                 const isRandomlySelected = randomDot === dotKey;
                 const isHovered = hoveredDot === dotKey;
@@ -844,27 +906,9 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
                     shouldHide={shouldHide}
                     onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
                     onMouseLeave={() => !selectedDot && setHoveredDot(null)}
-                    onClick={() => {
-                      if (!selectedDot && content) {
-                        const [row, col] = dotKey.split("-").map(Number);
-                        if (row < 2) {
-                          // Gallery artist: push route
-                          const artistIndex = row * 5 + col;
-                          const artistData = (ancientTechnology as any[])[
-                            artistIndex
-                          ];
-                          if (artistData && artistData.artistName) {
-                            const artistSlug = artistData.artistName
-                              .replace(/\s+/g, "-")
-                              .toLowerCase();
-                            router.push(
-                              `/events/ancient-technology/${artistSlug}`
-                            );
-                          }
-                        }
-                        handleDotClick(dotKey, content);
-                      }
-                    }}
+                    onClick={() =>
+                      !selectedDot && content && handleDotClick(dotKey, content)
+                    }
                     selectedPosition={
                       selectedDot
                         ? {
@@ -874,7 +918,77 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
                         : undefined
                     }
                     currentPosition={{
-                      row: rowIndex,
+                      row: rowIndex + 2,
+                      col: colIndex,
+                    }}
+                  />
+                );
+              })
+            )}
+          </div>
+
+          {/* Divider between main grid and overflow grid */}
+          <motion.div
+            className={`${bricolage.className} w-full flex items-center justify-center text-[0.65rem] text-white/30 tracking-widest uppercase gap-2 py-6 whitespace-nowrap`}
+            animate={{ opacity: selectedContent ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              whiteSpace: "nowrap",
+              width: "max-content",
+              maxWidth: "90vw",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              margin: "0 auto",
+            }}
+          >
+            <span className="font-light">5x5 Collective //</span>
+            <span className="font-medium">est 5.5.25</span>
+          </motion.div>
+        </div>
+      </div>
+      {/* Overflow grid section (beneath-the-fold, scroll to reveal) */}
+      <div className="w-full flex flex-col items-center justify-start mt-12 pb-24">
+        <div className="w-[min(90vw,90vh)]">
+          <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none overflow-x-auto">
+            {overflowRows.map((row, rowIndex) =>
+              row.map((content, colIndex) => {
+                const dotKey = `overflow-${rowIndex + 3}-${colIndex}`;
+                const isRippling = rippleDot === dotKey;
+                const isRandomlySelected = randomDot === dotKey;
+                const isHovered = hoveredDot === dotKey;
+                const isSelected = selectedDot !== null;
+                const isClickedDot = dotKey === selectedDot;
+                const isMobileOrTablet =
+                  typeof window !== "undefined" && window.innerWidth < 1024;
+                const shouldHide =
+                  isMobileOrTablet && isSelected && !isClickedDot;
+
+                return (
+                  <Dot
+                    key={dotKey}
+                    content={content}
+                    position={dotKey}
+                    isHovered={isHovered}
+                    isRippling={isRippling}
+                    isRandomlySelected={isRandomlySelected}
+                    isSelected={isSelected}
+                    isClickedDot={isClickedDot}
+                    shouldHide={shouldHide}
+                    onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
+                    onMouseLeave={() => !selectedDot && setHoveredDot(null)}
+                    onClick={() =>
+                      !selectedDot && content && handleDotClick(dotKey, content)
+                    }
+                    selectedPosition={
+                      selectedDot
+                        ? {
+                            row: parseInt(selectedDot.split("-")[0]),
+                            col: parseInt(selectedDot.split("-")[1]),
+                          }
+                        : undefined
+                    }
+                    currentPosition={{
+                      row: rowIndex + 3,
                       col: colIndex,
                     }}
                   />
@@ -885,63 +999,60 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
         </div>
       </div>
 
-      {/* Light outline around top two rows */}
-      <div
-        className="absolute left-0 top-0 w-full pointer-events-none"
-        style={{ height: "40%" }}
-      >
-        <div
-          className="absolute w-full h-full border-4 border-white/40 rounded-2xl shadow-[0_0_0_2px_rgba(255,255,255,0.15)]"
-          style={{
-            boxSizing: "border-box",
-            pointerEvents: "none",
-          }}
-        />
-      </div>
-
-      {/* Content Card Modal (GalleryContentCard for top 2 rows, ContentCard for others) */}
+      {/* Content Card Layer */}
       <AnimatePresence>
-        {selectedDot &&
-          selectedContent &&
-          (() => {
-            const [rowIndex, colIndex] = selectedDot.split("-").map(Number);
-            if (rowIndex < 2) {
-              // GalleryContentCard for top two rows
-              const artistIndex = rowIndex * 5 + colIndex;
-              const artistData = (ancientTechnology as any[])[artistIndex];
-              if (!artistData) return null;
-              return (
-                <motion.div
-                  key="gallery-content-card"
-                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <GalleryContentCard
-                    artistName={artistData.artistName}
-                    workName={artistData.workName}
-                    bio={artistData.bio}
-                    images={artistData.images}
-                    isExpanded={true}
-                    onClose={() => {
-                      setSelectedDot(null);
-                      setSelectedContent(null);
-                      setIsContentExpanded(false);
-                    }}
-                  />
-                </motion.div>
-              );
-            } else {
-              // Existing ContentCard for other dots
-              return (
-                <motion.div
-                  key="default-content-card"
-                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
+        {selectedContent && (
+          <>
+            {/* Background overlay - lower z-index */}
+            <motion.div
+              className="fixed inset-0 z-30 bg-black/30"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onMouseDown={handleBackgroundClick}
+              onClick={(e) => e.preventDefault()}
+            />
+
+            {/* Content Card - higher z-index */}
+            <div
+              className="fixed inset-0 z-40 h-full flex items-end lg:items-center justify-center pointer-events-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(() => {
+                // Find matching artist data from ancient technology JSON
+                const artistData = ancientTechData.find((artist: any) => {
+                  return (
+                    artist.slug ===
+                      `events-ancient-technology-${selectedContent}` ||
+                    artist.slug === slug
+                  );
+                });
+
+                if (artistData) {
+                  return (
+                    <GalleryContentCard
+                      artistName={artistData.artistName}
+                      workName={artistData.workName}
+                      bio={artistData.bio}
+                      images={artistData.images}
+                      projectDescription={artistData.projectDescription}
+                      price={artistData.price}
+                      website={artistData.website}
+                      instagram={artistData.instagram}
+                      isExpanded={isContentExpanded}
+                      onClose={() => {
+                        router.push("/");
+                        setSelectedDot(null);
+                        setSelectedContent(null);
+                        setIsContentExpanded(false);
+                        // Reset URL to root when closing
+                      }}
+                    />
+                  );
+                }
+
+                // Fallback for non-gallery content
+                return (
                   <ContentCard
                     content={selectedContent}
                     isExpanded={isContentExpanded}
@@ -951,10 +1062,11 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
                       setIsContentExpanded(false);
                     }}
                   />
-                </motion.div>
-              );
-            }
-          })()}
+                );
+              })()}
+            </div>
+          </>
+        )}
       </AnimatePresence>
     </div>
   );
