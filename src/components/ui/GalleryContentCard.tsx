@@ -112,11 +112,11 @@ export const GalleryContentCard: React.FC<GalleryContentCardProps> = ({
                 {images.artwork && images.artwork.length > 0 ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {images.artwork.map((imageSrc, i) => (
-                      <div key={i} className="aspect-square overflow-hidden rounded-lg">
+                      <div key={i} className="overflow-hidden rounded-lg">
                         <img 
                           src={imageSrc} 
                           alt={`${workName} artwork ${i + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain"
                         />
                       </div>
                     ))}
@@ -204,11 +204,11 @@ export const GalleryContentCard: React.FC<GalleryContentCardProps> = ({
                 {images.headshots && images.headshots.length > 0 ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {images.headshots.map((imageSrc, i) => (
-                      <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg">
+                      <div key={i} className="overflow-hidden rounded-lg">
                         <img 
                           src={imageSrc} 
                           alt={`${artistName} headshot ${i + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain"
                         />
                       </div>
                     ))}
