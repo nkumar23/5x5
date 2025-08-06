@@ -6,7 +6,10 @@ interface GalleryContentCardProps {
   artistName: string;
   workName: string;
   bio: string;
-  images: string[];
+  images: {
+    artwork: string[];
+    headshots: string[];
+  };
   onClose?: () => void;
   isExpanded?: boolean;
   projectDescription?: string;
@@ -105,22 +108,36 @@ export const GalleryContentCard: React.FC<GalleryContentCardProps> = ({
                   {workName}
                 </h1>
                 
-                {/* Placeholder artwork images */}
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[1, 2, 3].map((i) => (
-                    <div 
-                      key={i} 
-                      className="aspect-square bg-white/10 rounded-lg flex items-center justify-center"
-                    >
-                      <span 
-                        className="text-sm opacity-60"
-                        style={{ color: getCardTextColor() }}
+                {/* Artwork images */}
+                {images.artwork && images.artwork.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {images.artwork.map((imageSrc, i) => (
+                      <div key={i} className="overflow-hidden rounded-lg">
+                        <img 
+                          src={imageSrc} 
+                          alt={`${workName} artwork ${i + 1}`}
+                          className="w-full h-auto object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <div 
+                        key={i} 
+                        className="aspect-square bg-white/10 rounded-lg flex items-center justify-center"
                       >
-                        Artwork {i}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                        <span 
+                          className="text-sm opacity-60"
+                          style={{ color: getCardTextColor() }}
+                        >
+                          Artwork {i}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {projectDescription && (
                   <div>
@@ -183,22 +200,36 @@ export const GalleryContentCard: React.FC<GalleryContentCardProps> = ({
                   About the Artist: {artistName}
                 </h2>
                 
-                {/* Placeholder artist images */}
-                <div className="grid grid-cols-2 gap-4">
-                  {[1, 2].map((i) => (
-                    <div 
-                      key={i} 
-                      className="aspect-[4/3] bg-white/10 rounded-lg flex items-center justify-center"
-                    >
-                      <span 
-                        className="text-sm opacity-60"
-                        style={{ color: getCardTextColor() }}
+                {/* Artist headshot images */}
+                {images.headshots && images.headshots.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {images.headshots.map((imageSrc, i) => (
+                      <div key={i} className="overflow-hidden rounded-lg">
+                        <img 
+                          src={imageSrc} 
+                          alt={`${artistName} headshot ${i + 1}`}
+                          className="w-full h-auto object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {[1, 2].map((i) => (
+                      <div 
+                        key={i} 
+                        className="aspect-[4/3] bg-white/10 rounded-lg flex items-center justify-center"
                       >
-                        Artist Photo {i}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                        <span 
+                          className="text-sm opacity-60"
+                          style={{ color: getCardTextColor() }}
+                        >
+                          Artist Photo {i}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <p
                   className="leading-relaxed"
