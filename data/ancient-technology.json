@@ -8,10 +8,10 @@
     "price": "On request",
     "website": "sallykong.com",
     "instagram": "sally.jh.kong",
-    "images": [
-      "/images/ancient-technology/sally-kong-1.jpg",
-      "/images/ancient-technology/sally-kong-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/sally-artwork.png"],
+      "headshots": ["/images/ancient-technology/sally-headshot.png"]
+    }
   },
   {
     "artistName": "Nikhil Kumar",
@@ -22,10 +22,10 @@
     "price": "5000",
     "website": "https://nikhilkumar.media",
     "instagram": "fullstack_human",
-    "images": [
-      "/images/ancient-technology/nikhil-kumar-1.jpg",
-      "/images/ancient-technology/nikhil-kumar-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/nikhil-artwork.jpg"],
+      "headshots": ["/images/ancient-technology/nikhil-headshot.jpg"]
+    }
   },
   {
     "artistName": "Romilly Rinck",
@@ -36,10 +36,10 @@
     "price": "2200",
     "website": "",
     "instagram": "rfflowerr",
-    "images": [
-      "/images/ancient-technology/romilly-rinck-1.jpg",
-      "/images/ancient-technology/romilly-rinck-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/romilly-artwork.jpg"],
+      "headshots": ["/images/ancient-technology/romilly-headshot.jpg"]
+    }
   },
   {
     "artistName": "Lance Weiler",
@@ -50,10 +50,10 @@
     "price": "On request",
     "website": "https://lanceweiler.com/",
     "instagram": "lanceweiler",
-    "images": [
-      "/images/ancient-technology/lance-weiler-1.jpg",
-      "/images/ancient-technology/lance-weiler-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/lance-artwork.png"],
+      "headshots": ["/images/ancient-technology/lance-headshot.jpg"]
+    }
   },
   {
     "artistName": "Chandler Wild",
@@ -64,10 +64,10 @@
     "price": "On request",
     "website": "https://www.chandlerwild.com/",
     "instagram": "chanwild",
-    "images": [
-      "/images/ancient-technology/chandler-wild-1.jpg",
-      "/images/ancient-technology/chandler-wild-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/chandler-artwork.JPG"],
+      "headshots": ["/images/ancient-technology/chandler-headshot.jpg"]
+    }
   },
   {
     "artistName": "Sean Arguelles",
@@ -78,10 +78,10 @@
     "price": "On request",
     "website": "www.dobonyc.com",
     "instagram": "cooked.overeasy",
-    "images": [
-      "/images/ancient-technology/sean-arguelles-1.jpg",
-      "/images/ancient-technology/sean-arguelles-2.jpg"
-    ]
+    "images": {
+      "artwork": [],
+      "headshots": ["/images/ancient-technology/sean-headshot.jpg"]
+    }
   },
   {
     "artistName": "Kirsten Batten Leach",
@@ -92,10 +92,10 @@
     "price": "5000",
     "website": "https://kirstenbattenleach.com/",
     "instagram": "_______kirsten",
-    "images": [
-      "/images/ancient-technology/kirsten-batten-leach-1.jpg",
-      "/images/ancient-technology/kirsten-batten-leach-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/kirsten-artwork.jpg"],
+      "headshots": ["/images/ancient-technology/kirsten-headshot.jpg"]
+    }
   },
   {
     "artistName": "Matthew Bentley",
@@ -106,10 +106,10 @@
     "price": "8000",
     "website": "https://063n13.bandcamp.com/",
     "instagram": "maachewbentley",
-    "images": [
-      "/images/ancient-technology/matthew-bentley-1.jpg",
-      "/images/ancient-technology/matthew-bentley-2.jpg"
-    ]
+    "images": {
+      "artwork": ["/images/ancient-technology/matt-artwork.png"],
+      "headshots": ["/images/ancient-technology/matt-headshot.jpg"]
+    }
   },
   {
     "artistName": "Artist Nine",
@@ -120,10 +120,10 @@
     "price": "TBD",
     "website": "",
     "instagram": "",
-    "images": [
-      "/images/ancient-technology/artist-nine-1.jpg",
-      "/images/ancient-technology/artist-nine-2.jpg"
-    ]
+    "images": {
+      "artwork": [],
+      "headshots": []
+    }
   },
   {
     "artistName": "Artist Ten",
@@ -134,9 +134,9 @@
     "price": "TBD",
     "website": "",
     "instagram": "",
-    "images": [
-      "/images/ancient-technology/artist-ten-1.jpg",
-      "/images/ancient-technology/artist-ten-2.jpg"
-    ]
+    "images": {
+      "artwork": [],
+      "headshots": []
+    }
   }
 ]
