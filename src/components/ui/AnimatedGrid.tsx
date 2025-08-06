@@ -843,7 +843,7 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
           {/* Top grid: 2 rows from ancient-technology.json */}
           <div className="border-2 border-dashed border-gray-400 p-4 mb-8 rounded-lg">
             <div className="text-sm text-gray-600 mb-3 font-mono text-center -mt-6 bg-black">
-              ancient://technology — My Pet Ram, NYC 8/5-8/27
+              ancient://technology — 48 Hester St, NYC 8/7-8/28 W-Sa 12-6pm
             </div>
             <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none">
               {artistRows.map((row, rowIndex) =>
