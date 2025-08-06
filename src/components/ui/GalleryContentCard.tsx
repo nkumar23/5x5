@@ -72,17 +72,6 @@ export const GalleryContentCard: React.FC<GalleryContentCardProps> = ({
       }}
       exit={{ y: "100%" }}
       transition={{ type: "spring", damping: 20 }}
-      drag="y"
-      dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.5}
-      onDragEnd={(e, info) => {
-        if (typeof window !== "undefined" && window.innerWidth < 1024) {
-          console.log("Drag offset y:", info.offset.y);
-          if (info.offset.y > 60) {
-            onClose?.();
-          }
-        }
-      }}
     >
       <div
         className="w-full h-full rounded-t-3xl lg:rounded-2xl overflow-hidden bg-opacity-100"
@@ -91,10 +80,29 @@ export const GalleryContentCard: React.FC<GalleryContentCardProps> = ({
         }}
       >
         {/* Drag handle - only visible on mobile/tablet */}
-        <div className="w-12 h-1 mx-auto mt-3 mb-3 bg-white/30 rounded-full lg:hidden" />
+        <motion.div 
+          className="w-12 h-1 mx-auto mt-3 mb-3 bg-white/30 rounded-full lg:hidden cursor-grab active:cursor-grabbing"
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={0.5}
+          onDragEnd={(e, info) => {
+            if (typeof window !== "undefined" && window.innerWidth < 1024) {
+              console.log("Drag offset y:", info.offset.y);
+              if (info.offset.y > 60) {
+                onClose?.();
+              }
+            }
+          }}
+        />
 
-        {/* Content */}
-        <div className="px-6 pt-2 pb-8 lg:p-12 h-full overflow-y-auto">
+        {/* Content - scrollable area */}
+        <div 
+          className="px-6 pt-2 pb-8 lg:p-12 h-full overflow-y-auto overscroll-y-contain"
+          style={{
+            touchAction: 'pan-y', // Allow vertical scrolling but prevent horizontal pan
+            WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
+          }}
+        >
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="flex-1 space-y-8">
               {/* ARTWORK SECTION */}
