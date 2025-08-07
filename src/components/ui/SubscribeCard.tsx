@@ -36,39 +36,24 @@ export const SubscribeCard: React.FC<SubscribeCardProps> = ({
     setError(null);
 
     try {
-      // Airtable API configuration
-      const AIRTABLE_BASE_ID =
-        process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID || "YOUR_BASE_ID";
-      const AIRTABLE_TABLE_NAME =
-        process.env.NEXT_PUBLIC_AIRTABLE_TABLE_NAME || "Subscribers";
-      const AIRTABLE_API_KEY =
-        process.env.NEXT_PUBLIC_AIRTABLE_API_KEY ||
-        "patXXXXXXXXXXXXXX.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-      const response = await fetch(
-        `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fields: {
-              Email: email,
-            },
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || "Failed to subscribe");
-      }
+      // Call our secure internal API endpoint
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
 
       const data = await response.json();
-      console.log("Successfully added to Airtable:", data);
 
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
+      console.log('Successfully subscribed:', data.message);
       setIsSubmitted(true);
     } catch (err) {
       console.error("Error submitting to Airtable:", err);
