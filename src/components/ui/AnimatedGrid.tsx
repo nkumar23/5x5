@@ -6,6 +6,7 @@ import { Bricolage_Grotesque, Content } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import GalleryContentCard from "./GalleryContentCard";
+import SubscribeCard from "./SubscribeCard";
 import { useRouter, usePathname } from "next/navigation";
 // Import ancient technology data
 const ancientTechData = require("../../../data/ancient-technology.json");
@@ -823,6 +824,15 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
     return () => window.removeEventListener("open-grid-card", handler);
   }, []);
 
+  // Handle subscribe slug - automatically show subscribe card
+  useEffect(() => {
+    if (slug === "subscribe") {
+      setSelectedDot("subscribe");
+      setSelectedContent("subscribe" as ContentKey);
+      setIsContentExpanded(true);
+    }
+  }, [slug]);
+
   return (
     <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden relative">
       {/* Noise overlay */}
@@ -1020,6 +1030,21 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
               onClick={(e) => e.stopPropagation()}
             >
               {(() => {
+                // Handle subscribe slug
+                if (slug === "subscribe") {
+                  return (
+                    <SubscribeCard
+                      isExpanded={isContentExpanded}
+                      onClose={() => {
+                        router.push("/");
+                        setSelectedDot(null);
+                        setSelectedContent(null);
+                        setIsContentExpanded(false);
+                      }}
+                    />
+                  );
+                }
+
                 // Find matching artist data from ancient technology JSON
                 const artistData = ancientTechData.find((artist: any) => {
                   return (
