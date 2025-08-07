@@ -94,6 +94,10 @@ const placeholderContent: Record<
     text: "The current contributors to 5x5 are listed below. If you would like to contribute, please reach out and share a sampling of your work.",
     link: "contributing",
   },
+  Subscribe: {
+    text: "Subscribe to our newsletter to stay up to date on our latest news and events.",
+    link: "subscribe",
+  },
 
   // Row 2 - Team
   "Quarantine Dreams": {
