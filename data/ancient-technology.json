@@ -79,7 +79,12 @@
     "website": "www.dobonyc.com",
     "instagram": "cooked.overeasy",
     "images": {
-      "artwork": ["/images/ancient-technology/sean-artwork.JPG"],
+      "artwork": [
+        "/images/ancient-technology/sean-artwork-1.png",
+        "/images/ancient-technology/sean-artwork-2.png",
+        "/images/ancient-technology/sean-artwork-3.png",
+        "/images/ancient-technology/sean-artwork-4.png"
+      ],
       "headshots": ["/images/ancient-technology/sean-headshot.jpg"]
     }
   },
@@ -93,13 +98,16 @@
     "website": "https://kirstenbattenleach.com/",
     "instagram": "_______kirsten",
     "images": {
-      "artwork": ["/images/ancient-technology/kirsten-artwork.jpg"],
+      "artwork": [
+        "/images/ancient-technology/kirsten-artwork.jpg",
+        "/images/ancient-technology/kirsten-artwork-1.jpg"
+      ],
       "headshots": ["/images/ancient-technology/kirsten-headshot.jpg"]
     }
   },
   {
     "artistName": "Matthew Bentley",
-    "slug": "events-ancient-technology-matthew-bentley",
+    "slug": "events-ancient-technology-maachew-bentley",
     "workName": "GROUND ZERO pH",
     "bio": "Maachew Bentley, also known as 063N13 (GENIE), is a multifaceted creative based in New York, known for his expertise in music curation, photography, and event programming. His work seamlessly blends elements of photographic curation and music production, creating a unique artistic expression that transcends the boundaries of traditional media.",
     "projectDescription": "Following so called Emancipation, watermelons were widely cultivated by African Americans as a means of economic independence. Seeds were exchanged in local trade, emphasizing their value beyond consumption. Watermelon offered newly freed African Americans a source of income, traded or saved for future planting, holding both practical and economic value. Over time, the fruit became the target of racist caricature, used in popular culture to degrade Black autonomy. Imagery of watermelon being eaten hand to mouth created a perception of messiness, gluttony, and public nuisance further undermining the fruit's role in Black survival and enterprise. This work revisits the watermelon's historical role and reframes it as a symbol of resilience and resourcefulness. The sword marks the possibility of a great reclamation. The stone is just 92% water.",
