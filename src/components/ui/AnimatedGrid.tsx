@@ -950,8 +950,8 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
         </motion.div>
       </div>
       {/* Overflow grid section (beneath-the-fold, scroll to reveal) */}
-      <div className="absolute top-full w-full mt-12 flex justify-center">
-        <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none overflow-x-auto">
+      <div className="top-full w-full mt-12 flex justify-center">
+        <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none overflow-x-auto w-[90vw] max-w-[500px]">
           {overflowRows.map((row, rowIndex) =>
             row.map((content, colIndex) => {
               const dotKey = `overflow-${rowIndex + 3}-${colIndex}`;
