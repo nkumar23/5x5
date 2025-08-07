@@ -79,7 +79,12 @@
     "website": "www.dobonyc.com",
     "instagram": "cooked.overeasy",
     "images": {
-      "artwork": ["/images/ancient-technology/sean-artwork.JPG"],
+      "artwork": [
+        "/images/ancient-technology/sean-artwork-1.png",
+        "/images/ancient-technology/sean-artwork-2.png",
+        "/images/ancient-technology/sean-artwork-3.png",
+        "/images/ancient-technology/sean-artwork-4.png"
+      ],
       "headshots": ["/images/ancient-technology/sean-headshot.jpg"]
     }
   },
