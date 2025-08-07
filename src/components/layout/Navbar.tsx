@@ -1,19 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { colorPalette, contentColorMap } from '../ui/AnimatedGrid';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { colorPalette, contentColorMap } from "../ui/AnimatedGrid";
 
 const navItems = [
-  { name: 'About', key: 'About' },
-  { name: 'Companies', key: 'Companies' },
-  { name: 'Residency', key: 'Residency' },
-  { name: 'Grants', key: 'Grants' },
-  { name: 'Contributors', key: 'Contributors' },
+  { name: "About", key: "About" },
+  { name: "Companies", key: "Companies" },
+  { name: "Residency", key: "Residency" },
+  { name: "Grants", key: "Grants" },
+  { name: "Contributors", key: "Contributors" },
+  { name: "Subscribe", key: "Subscribe" },
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -21,36 +24,43 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Click-away handler for dropdown
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
-      const dropdown = document.getElementById('navbar-accordion');
-      if (
-        dropdown &&
-        !dropdown.contains(e.target as Node)
-      ) {
+      const dropdown = document.getElementById("navbar-accordion");
+      if (dropdown && !dropdown.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
   // Function to trigger card open in AnimatedGrid
   const handleNavClick = (key: string) => {
-    window.dispatchEvent(new CustomEvent('open-grid-card', { detail: { key } }));
+    // Handle Subscribe navigation specially
+    if (key === "Subscribe") {
+      router.push("/subscribe");
+      setOpen(false);
+      return;
+    }
+    
+    // For other nav items, trigger the grid card event
+    window.dispatchEvent(
+      new CustomEvent("open-grid-card", { detail: { key } })
+    );
     setOpen(false);
   };
 
   return (
     <motion.header
       className={`fixed w-full z-50 transition-colors duration-300 ${
-        scrolled ? 'bg-white/80 backdrop-blur-md' : 'bg-transparent'
+        scrolled ? "bg-white/80 backdrop-blur-md" : "bg-transparent"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -81,10 +91,13 @@ export default function Navbar() {
                 key={item.key}
                 className="block w-full text-left px-4 py-2 focus:outline-none"
                 style={{
-                  backgroundColor: colorPalette[contentColorMap[item.key as keyof typeof contentColorMap]],
-                  color: '#000',
+                  backgroundColor:
+                    colorPalette[
+                      contentColorMap[item.key as keyof typeof contentColorMap]
+                    ],
+                  color: "#000",
                   fontWeight: 600,
-                  fontFamily: 'inherit',
+                  fontFamily: "inherit",
                 }}
                 onClick={() => handleNavClick(item.key)}
                 role="menuitem"
@@ -98,4 +111,4 @@ export default function Navbar() {
       {/* Remove nav and site title */}
     </motion.header>
   );
-} 
+}

@@ -20,6 +20,7 @@ type ContentKey =
   | "Residency"
   | "Grants"
   | "Contributors"
+  | "Subscribe"
   | "Quarantine Dreams"
   | "Dancing Monkey"
   | "Power to the People"
@@ -92,6 +93,10 @@ const placeholderContent: Record<
   Contributors: {
     text: "The current contributors to 5x5 are listed below. If you would like to contribute, please reach out and share a sampling of your work.",
     link: "contributing",
+  },
+  Subscribe: {
+    text: "Subscribe to our newsletter to stay up to date on our latest news and events.",
+    link: "subscribe",
   },
 
   // Row 2 - Team
@@ -259,6 +264,7 @@ export const contentColorMap: Record<ContentKey, keyof typeof colorPalette> = {
   Residency: "infraPink",
   Grants: "pastelGreen",
   Contributors: "horizonPeach",
+  Subscribe: "luminalAmber",
   "Quarantine Dreams": "luminalAmber",
   "Dancing Monkey": "perceptualViolet",
   "Power to the People": "celestialBlue",
@@ -579,10 +585,31 @@ interface AnimatedGridProps {
 export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
   // Split grid logic
   // Top: 2 rows from ancient-technology.json (5x2)
-  const artistRows = [
-    ancientTechnology.slice(0, 5),
-    ancientTechnology.slice(5, 10),
+  // Only use first 8 artists, then add Subscribe and Instagram as special dots
+  const realArtists = ancientTechnology.slice(0, 8);
+
+  // Create special dots for Subscribe and Instagram
+  const specialDots = [
+    {
+      artistName: "Subscribe",
+      slug: "Subscribe",
+      isSpecialLink: true,
+      linkType: "subscribe",
+      url: "/subscribe",
+    },
+    {
+      artistName: "Instagram",
+      slug: "instagram-link",
+      isSpecialLink: true,
+      linkType: "instagram",
+      url: "https://instagram.com/5x5_collective",
+    },
   ];
+
+  // Combine real artists with special dots to fill 10 spots
+  const allDots = [...realArtists, ...specialDots];
+
+  const artistRows = [allDots.slice(0, 5), allDots.slice(5, 10)];
   // Middle: next 3 rows from gridContent (rows 0-2)
   const mainRows = gridContent.slice(0, 3);
   // Overflow/beneath-the-fold: last 2 rows from gridContent
@@ -777,6 +804,16 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
     setRandomDot(null);
     isAnimating.current = false;
 
+    // Handle special link dots
+    if (artist.isSpecialLink) {
+      if (artist.linkType === "subscribe") {
+        router.push("/subscribe");
+      } else if (artist.linkType === "instagram") {
+        window.open(artist.url, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+
     // Create URL-friendly artist name from artistName
     const artistSlug = artist.artistName
       .toLowerCase()
@@ -808,6 +845,11 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
     const handler = (e: any) => {
       const key = e.detail?.key;
       if (!key) return;
+      if (key === "Subscribe") {
+        setSelectedDot("subscribe");
+        setSelectedContent("Subscribe" as ContentKey);
+        return;
+      }
       // Find the position of the card in the grid
       for (let row = 0; row < gridContent.length; row++) {
         for (let col = 0; col < gridContent[row].length; col++) {
