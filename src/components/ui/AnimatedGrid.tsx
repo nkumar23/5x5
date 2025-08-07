@@ -6,6 +6,7 @@ import { Bricolage_Grotesque, Content } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import GalleryContentCard from "./GalleryContentCard";
+import SubscribeCard from "./SubscribeCard";
 import { useRouter, usePathname } from "next/navigation";
 // Import ancient technology data
 const ancientTechData = require("../../../data/ancient-technology.json");
@@ -823,6 +824,15 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
     return () => window.removeEventListener("open-grid-card", handler);
   }, []);
 
+  // Handle subscribe slug - automatically show subscribe card
+  useEffect(() => {
+    if (slug === "subscribe") {
+      setSelectedDot("subscribe");
+      setSelectedContent("subscribe" as ContentKey);
+      setIsContentExpanded(true);
+    }
+  }, [slug]);
+
   return (
     <div className="w-full min-h-[100dvh] flex flex-col bg-black overflow-hidden relative">
       {/* Noise overlay */}
@@ -838,164 +848,165 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
       />
 
       {/* Grid Container */}
-      <div className="w-full flex-1 min-h-[60dvh] relative flex flex-col items-center justify-center p-8">
-        <div className="w-[min(90vw,90vh)] relative" ref={gridRef}>
-          {/* Top grid: 2 rows from ancient-technology.json */}
-          <div className="border-2 border-dashed border-gray-400 p-4 mb-8 rounded-lg">
-            <div className="text-sm text-gray-600 mb-3 font-mono text-center -mt-6 bg-black">
-              ancient://technology — 48 Hester St, NYC 8/7-8/28 W-Sa 12-6pm
-            </div>
-            <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none">
-              {artistRows.map((row, rowIndex) =>
-                row.map((artist, colIndex) => {
-                  const dotKey = artist.slug;
-                  const isSelected = selectedDot === dotKey;
-                  return (
-                    <Dot
-                      key={dotKey}
-                      content={artist.artistName}
-                      position={dotKey}
-                      isHovered={hoveredDot === dotKey}
-                      isRippling={rippleDot === dotKey}
-                      isRandomlySelected={randomDot === dotKey}
-                      isSelected={isSelected}
-                      isClickedDot={isSelected}
-                      shouldHide={false}
-                      onMouseEnter={() => setHoveredDot(dotKey)}
-                      onMouseLeave={() => setHoveredDot(null)}
-                      onClick={() =>
-                        !selectedDot && handleArtistDotClick(dotKey, artist)
-                      }
-                      selectedPosition={
-                        selectedDot === dotKey
-                          ? { row: rowIndex, col: colIndex }
-                          : undefined
-                      }
-                      currentPosition={{ row: rowIndex, col: colIndex }}
-                    />
-                  );
-                })
-              )}
-            </div>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center relative">
+        {/* Top grid: 2 rows from ancient-technology.json */}
+        <div className="border-2 border-dashed border-gray-400 rounded-lg">
+          <div className="text-xs text-gray-600 mb-3 font-mono text-center -mt-2">
+            <span className="bg-black md:inline">
+              ancient://technology
+              <br className="md:hidden" />
+              <span className="hidden md:inline"> - </span>
+              48 Hester St, NYC 8/7-8/28 W-Sa 12-6pm
+            </span>
           </div>
-          {/* Middle grid: next 3 rows from gridContent */}
-          <div className="grid grid-rows-3 grid-cols-5 gap-2 aspect-[5/3] select-none">
-            {mainRows.map((row, rowIndex) =>
-              row.map((content, colIndex) => {
-                const dotKey = `${rowIndex + 2}-${colIndex}`;
-                const isRippling = rippleDot === dotKey;
-                const isRandomlySelected = randomDot === dotKey;
-                const isHovered = hoveredDot === dotKey;
-                const isSelected = selectedDot !== null;
-                const isClickedDot = dotKey === selectedDot;
-                const isMobileOrTablet =
-                  typeof window !== "undefined" && window.innerWidth < 1024;
-                const shouldHide =
-                  isMobileOrTablet && isSelected && !isClickedDot;
-
+          <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none w-[90vw] max-w-[500px]">
+            {artistRows.map((row, rowIndex) =>
+              row.map((artist, colIndex) => {
+                const dotKey = artist.slug;
+                const isSelected = selectedDot === dotKey;
                 return (
                   <Dot
                     key={dotKey}
-                    content={content}
+                    content={artist.artistName}
                     position={dotKey}
-                    isHovered={isHovered}
-                    isRippling={isRippling}
-                    isRandomlySelected={isRandomlySelected}
+                    isHovered={hoveredDot === dotKey}
+                    isRippling={rippleDot === dotKey}
+                    isRandomlySelected={randomDot === dotKey}
                     isSelected={isSelected}
-                    isClickedDot={isClickedDot}
-                    shouldHide={shouldHide}
-                    onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
-                    onMouseLeave={() => !selectedDot && setHoveredDot(null)}
+                    isClickedDot={isSelected}
+                    shouldHide={false}
+                    onMouseEnter={() => setHoveredDot(dotKey)}
+                    onMouseLeave={() => setHoveredDot(null)}
                     onClick={() =>
-                      !selectedDot && content && handleDotClick(dotKey, content)
+                      !selectedDot && handleArtistDotClick(dotKey, artist)
                     }
                     selectedPosition={
-                      selectedDot
-                        ? {
-                            row: parseInt(selectedDot.split("-")[0]),
-                            col: parseInt(selectedDot.split("-")[1]),
-                          }
+                      selectedDot === dotKey
+                        ? { row: rowIndex, col: colIndex }
                         : undefined
                     }
-                    currentPosition={{
-                      row: rowIndex + 2,
-                      col: colIndex,
-                    }}
+                    currentPosition={{ row: rowIndex, col: colIndex }}
                   />
                 );
               })
             )}
           </div>
-
-          {/* Divider between main grid and overflow grid */}
-          <motion.div
-            className={`${bricolage.className} w-full flex items-center justify-center text-[0.65rem] text-white/30 tracking-widest uppercase gap-2 py-6 whitespace-nowrap`}
-            animate={{ opacity: selectedContent ? 0 : 1 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              whiteSpace: "nowrap",
-              width: "max-content",
-              maxWidth: "90vw",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              margin: "0 auto",
-            }}
-          >
-            <span className="font-light">5x5 Collective //</span>
-            <span className="font-medium">est 5.5.25</span>
-          </motion.div>
         </div>
+        {/* Middle grid: next 3 rows from gridContent */}
+        <div className="grid grid-rows-3 grid-cols-5 gap-2 aspect-[5/3] select-none w-[90vw] max-w-[500px]">
+          {mainRows.map((row, rowIndex) =>
+            row.map((content, colIndex) => {
+              const dotKey = `${rowIndex + 2}-${colIndex}`;
+              const isRippling = rippleDot === dotKey;
+              const isRandomlySelected = randomDot === dotKey;
+              const isHovered = hoveredDot === dotKey;
+              const isSelected = selectedDot !== null;
+              const isClickedDot = dotKey === selectedDot;
+              const isMobileOrTablet =
+                typeof window !== "undefined" && window.innerWidth < 1024;
+              const shouldHide =
+                isMobileOrTablet && isSelected && !isClickedDot;
+
+              return (
+                <Dot
+                  key={dotKey}
+                  content={content}
+                  position={dotKey}
+                  isHovered={isHovered}
+                  isRippling={isRippling}
+                  isRandomlySelected={isRandomlySelected}
+                  isSelected={isSelected}
+                  isClickedDot={isClickedDot}
+                  shouldHide={shouldHide}
+                  onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
+                  onMouseLeave={() => !selectedDot && setHoveredDot(null)}
+                  onClick={() =>
+                    !selectedDot && content && handleDotClick(dotKey, content)
+                  }
+                  selectedPosition={
+                    selectedDot
+                      ? {
+                          row: parseInt(selectedDot.split("-")[0]),
+                          col: parseInt(selectedDot.split("-")[1]),
+                        }
+                      : undefined
+                  }
+                  currentPosition={{
+                    row: rowIndex + 2,
+                    col: colIndex,
+                  }}
+                />
+              );
+            })
+          )}
+        </div>
+
+        {/* Divider between main grid and overflow grid */}
+        <motion.div
+          className={`${bricolage.className} w-full flex items-center justify-center text-[0.65rem] text-white/30 tracking-widest uppercase gap-2 py-6 whitespace-nowrap`}
+          animate={{ opacity: selectedContent ? 0 : 1 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            whiteSpace: "nowrap",
+            width: "max-content",
+            maxWidth: "90vw",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            margin: "0 auto",
+          }}
+        >
+          <span className="font-light">5x5 Collective //</span>
+          <span className="font-medium">est 5.5.25</span>
+        </motion.div>
       </div>
       {/* Overflow grid section (beneath-the-fold, scroll to reveal) */}
-      <div className="w-full flex flex-col items-center justify-start mt-12 pb-24">
-        <div className="w-[min(90vw,90vh)]">
-          <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none overflow-x-auto">
-            {overflowRows.map((row, rowIndex) =>
-              row.map((content, colIndex) => {
-                const dotKey = `overflow-${rowIndex + 3}-${colIndex}`;
-                const isRippling = rippleDot === dotKey;
-                const isRandomlySelected = randomDot === dotKey;
-                const isHovered = hoveredDot === dotKey;
-                const isSelected = selectedDot !== null;
-                const isClickedDot = dotKey === selectedDot;
-                const isMobileOrTablet =
-                  typeof window !== "undefined" && window.innerWidth < 1024;
-                const shouldHide =
-                  isMobileOrTablet && isSelected && !isClickedDot;
+      <div className="top-full w-full mt-12 flex justify-center">
+        <div className="grid grid-rows-2 grid-cols-5 gap-2 aspect-[5/2] select-none overflow-x-auto w-[90vw] max-w-[500px]">
+          {overflowRows.map((row, rowIndex) =>
+            row.map((content, colIndex) => {
+              const dotKey = `overflow-${rowIndex + 3}-${colIndex}`;
+              const isRippling = rippleDot === dotKey;
+              const isRandomlySelected = randomDot === dotKey;
+              const isHovered = hoveredDot === dotKey;
+              const isSelected = selectedDot !== null;
+              const isClickedDot = dotKey === selectedDot;
+              const isMobileOrTablet =
+                typeof window !== "undefined" && window.innerWidth < 1024;
+              const shouldHide =
+                isMobileOrTablet && isSelected && !isClickedDot;
 
-                return (
-                  <Dot
-                    key={dotKey}
-                    content={content}
-                    position={dotKey}
-                    isHovered={isHovered}
-                    isRippling={isRippling}
-                    isRandomlySelected={isRandomlySelected}
-                    isSelected={isSelected}
-                    isClickedDot={isClickedDot}
-                    shouldHide={shouldHide}
-                    onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
-                    onMouseLeave={() => !selectedDot && setHoveredDot(null)}
-                    onClick={() =>
-                      !selectedDot && content && handleDotClick(dotKey, content)
-                    }
-                    selectedPosition={
-                      selectedDot
-                        ? {
-                            row: parseInt(selectedDot.split("-")[0]),
-                            col: parseInt(selectedDot.split("-")[1]),
-                          }
-                        : undefined
-                    }
-                    currentPosition={{
-                      row: rowIndex + 3,
-                      col: colIndex,
-                    }}
-                  />
-                );
-              })
-            )}
-          </div>
+              return (
+                <Dot
+                  key={dotKey}
+                  content={content}
+                  position={dotKey}
+                  isHovered={isHovered}
+                  isRippling={isRippling}
+                  isRandomlySelected={isRandomlySelected}
+                  isSelected={isSelected}
+                  isClickedDot={isClickedDot}
+                  shouldHide={shouldHide}
+                  onMouseEnter={() => !selectedDot && setHoveredDot(dotKey)}
+                  onMouseLeave={() => !selectedDot && setHoveredDot(null)}
+                  onClick={() =>
+                    !selectedDot && content && handleDotClick(dotKey, content)
+                  }
+                  selectedPosition={
+                    selectedDot
+                      ? {
+                          row: parseInt(selectedDot.split("-")[0]),
+                          col: parseInt(selectedDot.split("-")[1]),
+                        }
+                      : undefined
+                  }
+                  currentPosition={{
+                    row: rowIndex + 3,
+                    col: colIndex,
+                  }}
+                />
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -1019,6 +1030,21 @@ export default function AnimatedGrid({ slug = null }: AnimatedGridProps) {
               onClick={(e) => e.stopPropagation()}
             >
               {(() => {
+                // Handle subscribe slug
+                if (slug === "subscribe") {
+                  return (
+                    <SubscribeCard
+                      isExpanded={isContentExpanded}
+                      onClose={() => {
+                        router.push("/");
+                        setSelectedDot(null);
+                        setSelectedContent(null);
+                        setIsContentExpanded(false);
+                      }}
+                    />
+                  );
+                }
+
                 // Find matching artist data from ancient technology JSON
                 const artistData = ancientTechData.find((artist: any) => {
                   return (
